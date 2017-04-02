@@ -1,0 +1,26 @@
+(defun count-package-symbols (package)
+  (let ((lst) (pcount))
+	(do-all-symbols (s lst)
+	  (when (eq (find-package package) (symbol-package s)) (push s lst))
+	  (setf pcount (length lst)))
+	pcount))
+
+(defun show-package-info (&optional (stream *standard-output*))
+  (dolist (package (list-all-packages))
+	(with-text-style (stream (make-text-style :fix :italic :very-large))
+					 (write-string (package-name package) stream)
+					 (write-string "  " stream)
+					 (format stream " ~D"
+							 (count-package-symbols package))
+					 (terpri stream))))
+
+
+(defun show-packages (&optional (stream *standard-output*))
+  (with-text-style (stream (make-text-style :fix :italic :very-large))
+				   (formatting-table (stream)
+									 (dolist (package (list-all-packages))
+									   (formatting-row (stream)
+													   (formatting-cell (stream)
+																		(write-string (package-name package) stream))
+													   (formatting-cell (stream :align-x ':right)
+																		(format stream " ~D" (count-package-symbols package))))))))

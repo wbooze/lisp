@@ -1,0 +1,28 @@
+("One of the attractions of CL is that the strings
+include newline characters, so one can just type in
+unparsed character data into large strings that run
+on for lots of lines of lots of characters"
+
+"TeX is the king of typesetting input languages. If one has
+a lot of plain text to type set, one just types it in."
+
+"Unfortunately that is not the whole story. Various characters are used
+to mark up the input. $ & % # _ { and } are easily produced, with
+\\$ \\& \\% \\# \\_ \\{ \\}"
+
+"However, the first edition of the LaTeX manual explains that
+~ ^ and \\ usually appear only in simulated keyboard input.
+Simulated keyboard input is entered using the \"verbatim\"
+environment, so ~ ^ and \\ are escaped as:"
+
+"\\begin{verbatim}
+~ ^ \\
+\\end{verbatim}"
+
+"At that time, even avante garde thinkers, such as Knuth,
+had no cause to trouble themselves over the law of migration to
+middle-ware. The problem is that eventually TeX input files would
+be written by computers as much as they would be typed in. 
+Except that the quoting rules are vexacious. To use TeX as
+middleware one needs to be able write code that quotes strings,
+reliably and automatically." )

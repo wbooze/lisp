@@ -1,0 +1,253 @@
+diff -aur -x CVS mcclim.new/Backends/CLX/image.lisp mcclim.old/Backends/CLX/image.lisp
+--- mcclim.new/Backends/CLX/image.lisp	2006-03-23 08:45:26.000000000 +0000
++++ mcclim.old/Backends/CLX/image.lisp	2006-04-20 23:23:37.000000000 +0100
+@@ -43,6 +43,7 @@
+ 
+ (defclass image () ())
+ 
++
+ (defgeneric image-width (image))
+ (defgeneric image-height (image))
+ (defgeneric image-pixels (image))
+@@ -53,15 +54,15 @@
+ (defgeneric write-pnm (image filename output-format))
+ 
+ (defmethod image-width ((image image))
+-  (cadr (array-dimensions (image-pixels image))))
++  (array-dimension (image-pixels image) 1))
+ 
+ (defmethod image-height ((image image))
+-  (car (array-dimensions (image-pixels image))))
++  (array-dimension (image-pixels image) 0))
+ 
+ (defmethod image-pixel ((image image) x y)
+   (aref (image-pixels image) y x))
+ 
+-(defmethod (setf image-pixel) (x y pixel image)
++(defmethod (setf image-pixel) (pixel (image image) x y)
+   (setf (aref (image-pixels image) y x) pixel))
+ 
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+diff -aur -x CVS mcclim.new/Backends/CLX/medium.lisp mcclim.old/Backends/CLX/medium.lisp
+--- mcclim.new/Backends/CLX/medium.lisp	2006-04-17 19:12:16.000000000 +0100
++++ mcclim.old/Backends/CLX/medium.lisp	2006-04-20 23:23:37.000000000 +0100
+@@ -757,7 +757,8 @@
+                                           font-ascent font-descent
+                                           direction first-not-done))
+                       (multiple-value-bind (minx miny maxx maxy)
+-                          (climi::text-bounding-rectangle*
++                          (text-bounding-rectangle*
+                            medium string :text-style text-style
+                            :start (1+ position-newline) :end end)
+                         (values (min minx left) (- ascent)
+diff -aur -x CVS mcclim.new/coordinates.lisp mcclim.old/coordinates.lisp
+--- mcclim.new/coordinates.lisp	2003-05-31 19:18:43.000000000 +0100
++++ mcclim.old/coordinates.lisp	2006-04-20 23:23:37.000000000 +0100
+@@ -25,8 +25,8 @@
+ 
+ (in-package :clim-internals)
+ 
+-#||
+-(deftype coordinate () 'double-float)
++
++(deftype coordinate () 'single-float)
+ 
+ (defun coordinate (n)
+   "Coerces N to be a coordinate."
+@@ -35,7 +35,7 @@
+ 
+ (defun coordinate-epsilon ()
+   ;; tweak if you like
+-  (* #.(expt 2 10) double-float-epsilon))
++  (* #.(expt 2 10) single-float-epsilon))
+ 
+ (defun coordinate= (x y)
+   (< (abs (- x y)) (coordinate-epsilon)))
+@@ -45,29 +45,29 @@
+ 
+ (defun coordinate/= (x y)
+   (not (coordinate= x y)))
+-||#
+-
+-(deftype coordinate () 'real)
+ 
+-(declaim (inline coordinate))
+-(defun coordinate (n) n)
+ 
+-(declaim (inline coordinate-epsilon))
+-(defun coordinate-epsilon ()
+-  0)
++;; (deftype coordinate () 'real)
+ 
+-(declaim (inline coordinate=))
+-(defun coordinate= (x y)
+-  (= x y))
++;; (declaim (inline coordinate))
++;; (defun coordinate (n) n)
+ 
+-(declaim (inline coordinate<=))
+-(defun coordinate<= (x y)
+-  (<= x y))
+-
+-(declaim (inline coordinate/=))
+-(defun coordinate/= (x y)
+-  (/= x y))
++;; (declaim (inline coordinate-epsilon))
++;; (defun coordinate-epsilon ()
++;;   0)
++
++;; (declaim (inline coordinate=))
++;; (defun coordinate= (x y)
++;;   (= x y))
++
++;; (declaim (inline coordinate<=))
++;; (defun coordinate<= (x y)
++;;   (<= x y))
++
++;; (declaim (inline coordinate/=))
++;; (defun coordinate/= (x y)
++;;   (/= x y))
+ 
+ ;; $Log: coordinates.lisp,v $
+ ;; Revision 1.6  2003/05/31 18:18:43  gilbert
+--- mcclim.new/recording.lisp	2006-03-29 11:43:37.000000000 +0100
++++ mcclim.old/recording.lisp	2006-04-20 23:23:37.000000000 +0100
+@@ -430,8 +430,8 @@
+   (:documentation "Implementation class for the Basic Output Record Protocol."))
+ 
+ (defmethod initialize-instance :after ((record basic-output-record)
+-				       &key (x-position 0.0d0)
+-                                            (y-position 0.0d0))
++				       &key (x-position 0.0)
++                                            (y-position 0.0))
+   (setf (rectangle-edges* record)
+ 	(values x-position y-position x-position y-position)))
+ 
+@@ -439,10 +439,10 @@
+ ;;; redundant with the bounding rectangle coordinates.
+ (defclass compound-output-record (basic-output-record)
+   ((x :initarg :x-position
+-      :initform 0.0d0
++      :initform 0.0
+       :documentation "X-position of the empty record.")
+    (y :initarg :y-position
+-      :initform 0.0d0
++      :initform 0.0
+       :documentation "Y-position of the empty record.")
+    (in-moving-p :initform nil
+                 :documentation "Is set while changing the position."))
+@@ -1470,8 +1470,8 @@
+ ;;; Helper function
+ (defun normalize-coords (dx dy &optional unit)
+   (let ((norm (sqrt (+ (* dx dx) (* dy dy)))))
+-    (cond ((= norm 0.0d0)
+-	   (values 0.0d0 0.0d0))
++    (cond ((= norm 0.0)
++	   (values 0.0 0.0))
+ 	  (unit
+ 	   (let ((scale (/ unit norm)))
+ 	     (values (* dx scale) (* dy scale))))
+diff -aur -x CVS mcclim.new/regions.lisp mcclim.old/regions.lisp
+--- mcclim.new/regions.lisp	2006-03-10 21:58:13.000000000 +0000
++++ mcclim.old/regions.lisp	2006-04-20 23:23:37.000000000 +0100
+@@ -353,13 +353,13 @@
+   ((coordinates :initform (make-array 4 :element-type 'coordinate))))
+ 
+ (defmethod initialize-instance :after ((obj standard-rectangle)
+-				       &key (x1 0.0d0) (y1 0.0d0)
+-				       (x2 0.0d0) (y2 0.0d0))
++				       &key (x1 0.0) (y1 0.0)
++				       (x2 0.0) (y2 0.0))
+   (let ((coords (slot-value obj 'coordinates)))
+-    (setf (aref coords 0) x1)
+-    (setf (aref coords 1) y1)
+-    (setf (aref coords 2) x2)
+-    (setf (aref coords 3) y2)))
++    (setf (aref coords 0) (coerce x1 'coordinate))
++    (setf (aref coords 1) (coerce y1 'coordinate))
++    (setf (aref coords 2) (coerce x2 'coordinate))
++    (setf (aref coords 3) (coerce y2 'coordinate))))
+ 
+ (defmacro with-standard-rectangle ((x1 y1 x2 y2) rectangle &body body)
+   (with-gensyms (coords)
+@@ -413,10 +413,10 @@
+   (x1 y1 x2 y2 (rectangle standard-rectangle))
+   (let ((coords (slot-value rectangle 'coordinates)))
+     (declare (type (simple-array coordinate (4)) coords))
+-    (setf (aref coords 0) x1)
+-    (setf (aref coords 1) y1)
+-    (setf (aref coords 2) x2)
+-    (setf (aref coords 3) y2))
++    (setf (aref coords 0) (coerce x1 'coordinate))
++    (setf (aref coords 1) (coerce y1 'coordinate))
++    (setf (aref coords 2) (coerce x2 'coordinate))
++    (setf (aref coords 3) (coerce y2 'coordinate)))
+   (values x1 y1 x2 y2))
+ 
+ (defmethod rectangle-min-point ((rect rectangle))
+diff -aur -x CVS mcclim.new/transforms.lisp mcclim.old/transforms.lisp
+--- mcclim.new/transforms.lisp	2006-03-10 21:58:13.000000000 +0000
++++ mcclim.old/transforms.lisp	2006-04-20 23:23:37.000000000 +0100
+@@ -120,18 +120,18 @@
+    "Get the values of the transformation matrix as multiple values. This is not an exported function!"))
+ 
+ (defmethod get-transformation ((transformation standard-identity-transformation))
+-  (values 1 0 0 1 0 0))
++  (values 1.0 0.0 0.0 1.0 0.0 0.0))
+ 
+ (defmethod get-transformation ((transformation standard-translation))
+   (with-slots (dx dy) transformation
+-    (values 1 0 0 1 dx dy)))
++    (values 1.0 0.0 0.0 1.0 dx dy)))
+ 
+ (defmethod get-transformation ((transformation standard-hairy-transformation))
+   (with-slots (mxx mxy myx myy tx ty) transformation
+     (values mxx mxy myx myy tx ty)))
+ 
+ (defun make-translation-transformation (dx dy)
+-  (cond ((and (coordinate= dx 0) (coordinate= dy 0))
++  (cond ((and (coordinate= dx 0.0) (coordinate= dy 0.0))
+          +identity-transformation+)
+         (t
+          (make-instance 'standard-translation
+@@ -143,17 +143,17 @@
+     (make-rotation-transformation* angle 0 0)))
+ 
+ (defun make-rotation-transformation* (angle &optional origin-x origin-y)
+-  (let ((origin-x (or origin-x 0))
+-        (origin-y (or origin-y 0)))
++  (let ((origin-x (or origin-x 0.0))
++        (origin-y (or origin-y 0.0)))
+     (let ((s (coerce (sin angle) 'coordinate))
+           (c (coerce (cos angle) 'coordinate)))
+       ;; This clamping should be done more sensible -- And: is this actually a good thing?
+-      (when (coordinate= s 0) (setq s 0))
+-      (when (coordinate= c 0) (setq c 0))
+-      (when (coordinate= s 1) (setq s 1))
+-      (when (coordinate= c 1) (setq c 1))
+-      (when (coordinate= s -1) (setq s -1))
+-      (when (coordinate= c -1) (setq c -1))
++      (when (coordinate= s 0.0) (setq s 0.0))
++      (when (coordinate= c 0.0) (setq c 0.0))
++      (when (coordinate= s 1.0) (setq s 1.0))
++      (when (coordinate= c 1.0) (setq c 1.0))
++      (when (coordinate= s -1.0) (setq s -1.0))
++      (when (coordinate= c -1.0) (setq c -1.0))
+       ;; Wir stellen uns hier mal ganz dumm:
+       (make-3-point-transformation* origin-x origin-y  (+ origin-x 1) origin-y        origin-x (+ origin-y 1)
+                                     origin-x origin-y  (+ origin-x c) (+ origin-y s)  (- origin-x s) (+ origin-y c)) )))
+@@ -170,10 +170,10 @@
+                                 (if origin (point-y origin) 0)))
+ 
+ (defun make-scaling-transformation* (scale-x scale-y &optional origin-x origin-y)
+-  (let ((origin-x (or origin-x 0))
+-        (origin-y (or origin-y 0)))
++  (let ((origin-x (or origin-x 0.0))
++        (origin-y (or origin-y 0.0)))
+     (make-transformation scale-x 0
+-                         0 scale-y
++                         0.0 scale-y
+                          (- origin-x (* scale-x origin-x)) (- origin-y (* scale-y origin-y)))) )
+ 
+ (defun make-reflection-transformation (point1 point2)
+
