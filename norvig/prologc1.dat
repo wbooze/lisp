@@ -1,0 +1,33 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+(<- (likes Robin cats))
+(<- (likes Sandy ?x) (likes ?x cats))
+(<- (likes Kim ?x) (likes ?x Lee) (likes ?x Kim))
+
+(prolog-compile 'likes)
+;;;; (DEFUN LIKES/2 (?ARG1 ?ARG2 CONT)
+;;;;  (IF (UNIFY! ?ARG1 'ROBIN)
+;;;;      (IF (UNIFY! ?ARG2 'CATS)
+;;;;          (FUNCALL CONT)))
+;;;;  (IF (UNIFY! ?ARG1 'SANDY)
+;;;;      (IF (UNIFY! ?ARG2 ?X)
+;;;;          (LIKES/2 ?X 'CATS CONT)))
+;;;;  (IF (UNIFY! ?ARG1 'KIM)
+;;;;      (IF (UNIFY! ?ARG2 ?X)
+;;;;          (LIKES/2 ?X 'LEE (LAMBDA ()
+;;;;                             (LIKES/2 ?X 'KIM CONT)))))) 
+
+(<- (member ?item (?item . ?rest)))
+(<- (member ?item (?x . ?rest)) (member ?item ?rest))
+
+(prolog-compile 'member)
+;;;; (DEFUN MEMBER/2 (?ARG1 ?ARG2 CONT)
+;;;;  (IF (UNIFY! ?ARG1 ?ITEM)
+;;;;      (IF (UNIFY! ?ARG2 (CONS ?ITEM ?REST))
+;;;;          (FUNCALL CONT)))
+;;;;  (IF (UNIFY! ?ARG1 ?ITEM)
+;;;;      (IF (UNIFY! ?ARG2 (CONS ?X ?REST))
+;;;;          (MEMBER/2 ?ITEM ?REST CONT))))
+

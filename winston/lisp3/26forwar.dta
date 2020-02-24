@@ -1,0 +1,84 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+(setf *rules* (make-empty-stream))
+(remember-rule '(identify1
+                  ((? animal) has hair)
+                  ((? animal) is a mammal)))
+(remember-rule '(identify2
+                  ((? animal) gives milk)
+                  ((? animal) is a mammal)))
+(remember-rule '(identify3
+                  ((? animal) has feathers)
+                  ((? animal) is a bird)))
+(remember-rule '(identify4 
+                  ((? animal) flies)
+                  ((? animal) lays eggs)
+                  ((? animal) is a bird)))
+(remember-rule '(identify5 
+                  ((? animal) eats meat)
+                  ((? animal) is a carnivore)))
+(remember-rule '(identify6
+                  ((? animal) has pointed teeth)
+                  ((? animal) has claws)
+                  ((? animal) has forward eyes)
+                  ((? animal) is a carnivore)))
+(remember-rule '(identify7
+                  ((? animal) is a mammal)
+                  ((? animal) has hoofs)
+                  ((? animal) is an ungulate)))
+(remember-rule '(identify8 
+                  ((? animal) is a mammal)
+                  ((? animal) chews cud)
+                  ((? animal) is an ungulate)))
+(remember-rule '(identify9
+                  ((? animal) is a mammal)
+                  ((? animal) is a carnivore)
+                  ((? animal) has tawny color)
+                  ((? animal) has dark spots)
+                  ((? animal) is a cheetah)))
+(remember-rule '(identify10
+                  ((? animal) is a mammal)
+                  ((? animal) is a carnivore)
+                  ((? animal) has tawny color)
+                  ((? animal) has black stripes)
+                  ((? animal) is a tiger)))
+(remember-rule '(identify11
+                  ((? animal) is an ungulate)
+                  ((? animal) has long neck)
+                  ((? animal) has long legs)
+                  ((? animal) has dark spots)
+                  ((? animal) is a giraffe)))
+(remember-rule '(identify12
+                  ((? animal) is an ungulate)
+                  ((? animal) has black stripes)
+                  ((? animal) is a zebra)))
+(remember-rule '(identify13 
+                  ((? animal) is a bird)
+                  ((? animal) does not fly)
+                  ((? animal) has long neck)
+                  ((? animal) has long legs)
+                  ((? animal) is black and white)
+                  ((? animal) is a ostrich)))
+(remember-rule '(identify14
+                  ((? animal) is a bird)
+                  ((? animal) does not fly)
+                  ((? animal) swims)
+                  ((? animal) is black and white)
+                  ((? animal) is a penguin)))
+(remember-rule '(identify15
+                  ((? animal) is a bird)
+                  ((? animal) flies well)
+                  ((? animal) is a albatross)))
+(remember-rule '(identify16 
+                  ((? animal) is a (? species))
+                  ((? animal) is a parent of (? child))
+                  ((? child) is a (? species))))
+
+(setf *assertions* (make-empty-stream))
+(remember-assertion '(robbie has dark spots))
+(remember-assertion '(robbie has tawny color))
+(remember-assertion '(robbie eats meat))
+(remember-assertion '(robbie has hair))
+(remember-assertion '(suzie has feathers))
+(remember-assertion '(suzie flies well))
+

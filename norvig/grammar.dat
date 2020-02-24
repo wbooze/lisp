@@ -1,0 +1,111 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+> (?- (word sees verb ?infl ?senses))
+?INFL = (FINITE (- - + -) PRESENT)
+?SENSES = ((UNDERSTAND ((AGT 1 (NP ?3)))
+                       ((EXP 1 (NP ?4))
+                        (CON 2 (CLAUSE (THAT) (FINITE ?5 ?6)))))
+           (LOOK ((AGT 1 (NP ?7)) (OBJ 2 (NP ?8))))
+           (DATING ((AGT 1 (NP ?9)) (OBJ 2 (NP ?10)))))
+
+;;; ==============================
+
+> (try S John promised Kim to persuade Lee to sleep)
+?SEM = (AND (THE ?J (NAME JOHN ?J)) (AGT ?P ?J)
+            (PAST ?P) (PROMISE ?P)
+            (GOAL ?P ?K) (THE ?K (NAME KIM ?K))
+            (CON ?P ?PER) (PERSUADE ?PER) (GOAL ?PER ?L)
+            (THE ?L (NAME LEE ?L)) (CON ?PER ?S) (SLEEP ?S));
+
+> (try S Who did John promise Kim to persuade to sleep)
+?SEM = (AND (WH ?W (PERSON ?W)) (PAST ?P)
+            (THE ?J (NAME JOHN ?J)) (AGT ?P ?J)
+            (PROMISE ?P) (GOAL ?P ?K)
+            (THE ?K (NAME KIM ?K)) (CON ?P ?PER)
+            (PERSUADE ?PER) (GOAL ?PER ?W)
+            (CON ?PER ?S) (SLEEP ?S));
+
+;;; ==============================
+
+> (try S When did John promise Kim to persuade Lee to sleep)
+?SEM = (AND (WH ?W (TIME ?S ?W)) (PAST ?P)
+            (THE ?J (NAME JOHN ?J)) (AGT ?P ?J)
+            (PROMISE ?P) (GOAL ?P ?K)
+            (THE ?K (NAME KIM ?K)) (CON ?P ?PER)
+            (PERSUADE ?PER) (GOAL ?PER ?L)
+            (THE ?L (NAME LEE ?L)) (CON ?PER ?S)
+            (SLEEP ?S));
+
+?SEM = (AND (WH ?W (TIME ?PER ?W)) (PAST ?P)
+            (THE ?J (NAME JOHN ?J)) (AGT ?P ?J)
+            (PROMISE ?P) (GOAL ?P ?K)
+            (THE ?K (NAME KIM ?K)) (CON ?P ?PER)
+            (PERSUADE ?PER) (GOAL ?PER ?L)
+            (THE ?L (NAME LEE ?L)) (CON ?PER ?S)
+            (SLEEP ?S));
+
+?SEM = (AND (WH ?W (TIME ?P ?W)) (PAST ?P)
+            (THE ?J (NAME JOHN ?J)) (AGT ?P ?J)
+            (PROMISE ?P) (GOAL ?P ?K)
+            (THE ?K (NAME KIM ?K)) (CON ?P ?PER)
+            (PERSUADE ?PER) (GOAL ?PER ?L)
+            (THE ?L (NAME LEE ?L)) (CON ?PER ?S)
+            (SLEEP ?S)).
+
+;;; ==============================
+
+> (try S Kim would not have been looking for Lee)
+?SEM = (AND (THE ?K (NAME KIM ?K)) (AGT ?S ?K)
+            (EXPECTED ?S) (NOT ?S) (PAST-PARTICIPLE ?S)
+            (PROGRESSIVE ?S) (SEARCH ?S) (PAT ?S ?L)
+            (PAT ?S ?L) (THE ?L (NAME LEE ?L)));
+
+?SEM = (AND (THE ?K (NAME KIM ?K)) (AGT ?2 ?K)
+            (EXPECTED ?2) (NOT ?2) (PAST-PARTICIPLE ?LOOK)
+            (PROGRESSIVE ?LOOK) (LOOK ?LOOK) (FOR ?LOOK ?L)
+            (THE ?L (NAME LEE ?L)));
+
+;;; ==============================
+
+> (try s It should not surprise you that Kim does not like Lee)
+?SEM = (AND (MANDATORY ?2) (NOT ?2) (SURPRISE ?2) (EXP ?2 ?YOU)
+            (PRO ?YOU (LISTENER ?YOU)) (CON ?2 ?LIKE)
+            (THE ?K (NAME KIM ?K)) (AGT ?LIKE ?K)
+            (PRESENT ?LIKE) (NOT ?LIKE) (LIKE-1 ?LIKE)
+            (OBJ ?LIKE ?L) (THE ?L (NAME LEE ?L)));
+
+> (try s Kim did not want Lee to know that the man knew her)
+?SEM = (AND (THE ?K (NAME KIM ?K)) (AGT ?W ?K) (PAST ?W)
+            (NOT ?W) (DESIRE ?W) (GOAL ?W ?L)
+            (THE ?L (NAME LEE ?L)) (CON ?W ?KN)
+            (KNOW-THAT ?KN) (CON ?KN ?KN2)
+            (THE ?M (MAN ?M)) (AGT ?KN2 ?M) (PAST ?KN2)
+            (KNOW-OF ?KN2) (OBJ ?KN2 ?HER)
+            (PRO ?HER (FEMALE ?HER))).
+
+;;; ==============================
+
+> (try s That kim looked her up quickly surprised me)
+?SEM = (AND (THE ?K (NAME KIM ?K)) (AGT ?LU1 ?K) (PAST ?LU1)
+            (LOOK-UP ?LU1) (PAT ?LU1 ?H) (PRO ?H (FEMALE ?H))
+            (QUICKLY ?LU1) (CON ?S ?LU1) (PAST ?S) (SURPRISE ?S)
+            (EXP ?S ?ME1) (PRO ?ME1 (SPEAKER ?ME1)));
+
+?SEM = (AND (THE ?K (NAME KIM ?K)) (AGT ?LU2 ?K) (PAST ?LU2)
+            (LOOK-UP ?LU2) (PAT ?LU2 ?H) (PRO ?H (FEMALE ?H))
+            (CON ?S ?LU2) (QUICKLY ?S) (PAST ?S) (SURPRISE ?S)
+            (EXP ?S ?ME2) (PRO ?ME2 (SPEAKER ?ME2)));
+
+?SEM = (AND (THE ?K (NAME KIM ?K)) (AGT ?LU3 ?K) (PAST ?LU3)
+            (LOOK-UP ?LU3) (PAT ?LU3 ?H) (PRO ?H (FEMALE ?H))
+            (QUICKLY ?LU3) (CON ?S ?LU3) (PAST ?S) (SURPRISE ?S)
+            (EXP ?S ?ME3) (PRO ?ME3 (SPEAKER ?ME3)));
+
+?SEM = (AND (THE ?K (NAME KIM ?K)) (AGT ?LU4 ?K) (PAST ?LU4)
+            (LOOK-UP ?LU4) (PAT ?LU4 ?H) (PRO ?H (FEMALE ?H))
+            (CON ?S ?LU4) (QUICKLY ?S) (PAST ?S) (SURPRISE ?S)
+            (EXP ?S ?ME4) (PRO ?ME4 (SPEAKER ?ME4)));
+
+;;; ==============================

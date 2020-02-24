@@ -1,0 +1,8 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+(alpha = 2) (beta = 1) (gamma = 4) 
+c = 2.06142F-02 s = 9.99788F-01 xo = 1.49906 yo = -4.60179F-02
+(alpha = 2) (beta = 1) (gamma = 4) 
+c = 2.06142F-02 s = 9.99788F-01 xo = 1.49906 yo = -4.60179F-02

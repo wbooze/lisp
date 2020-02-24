@@ -1,0 +1,16 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD SEARCH PROCEDURES
+(load "19search.lisp")
+
+;;;; TEST SEARCH PROCEDURES
+
+(extend '(d a s))
+(depth-first 's 'f)
+(breadth-first 's 'f)
+(best-first 's 'f)

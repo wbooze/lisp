@@ -1,0 +1,25 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD RELATIONAL DATABASE PROCEDURES
+
+(load "30databa.lisp")
+
+;;;; LOAD RELATIONAL DATABASE DATA
+
+(load "30databa.dta")
+
+;;;; TEST  RELATIONAL DATABASE PROCEDURES
+
+(db-show screwdrivers)
+(db-count screwdrivers)
+(db-show (db-select screwdrivers with color eql red))
+(db-show (db-project screwdrivers over size weight))
+(db-show hammers)
+(db-show wrenches)
+(db-show (db-union hammers wrenches))
+

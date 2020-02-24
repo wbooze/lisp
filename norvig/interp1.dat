@@ -1,0 +1,88 @@
+;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;; Code from Paradigms of Artificial Intelligence Programming
+;;; Copyright (c) 1991 Peter Norvig
+
+> (scheme)
+==> (+ 2 2)
+4 
+
+==> ((if (= 1 2) * +) 3 4)
+7 
+
+==> ((if (= 1 1) * +) 3 4)
+12 
+
+==> (set! fact (lambda (n)
+                 (if (= n 0) 1
+                     (* n (fact (- n 1))))))
+#<DTP-LEXICAL-CLOSURE 36722615> 
+
+==> (fact 5)
+120 
+
+==> (set! table (lambda (f start end)
+                  (if (<= start end)
+                      (begin
+                        (write (list start (f start)))
+                        (newline)
+                        (table f (+ start 1) end)))))
+#<DTP-LEXICAL-CLOSURE 41072172> 
+
+==> (table fact 1 10)
+(1 1) 
+(2 2) 
+(3 6) 
+(4 24) 
+(5 120) 
+(6 720) 
+(7 5040) 
+(8 40320) 
+(9 362880) 
+(10 3628800) 
+NIL 
+
+==> (table (lambda (x) (* x x x)) 5 10)
+(5 125) 
+(6 216) 
+(7 343) 
+(8 512) 
+(9 729) 
+(10 1000) 
+NIL 
+
+==> [ABORT]
+
+;;;; Test data for macros:
+
+> (scheme-macro-expand '(and p q)) -> (IF P (AND Q))
+
+> (scheme-macro-expand '(and q)) -> Q
+
+> (scheme-macro-expand '(let ((x 1) (y 2)) (+ x y))) ->
+((LAMBDA (X Y) (+ X Y)) 1 2)
+
+> (scheme-macro-expand
+    '(letrec 
+       ((even? (lambda (x) (or (= x 0) (odd? (- x 1)))))
+        (odd?  (lambda (x) (even? (- x 1)))))
+       (even? z))) ->
+(LET ((EVEN? NIL)
+      (ODD? NIL))
+  (SET! EVEN? (LAMBDA (X) (OR (= X 0) (ODD? (- X 1)))))
+  (SET! ODD? (LAMBDA (X) (EVEN? (- X 1))))
+  (EVEN? Z))
+
+> (scheme)
+==> (define (reverse l)
+      (if (null? l) nil
+          (append (reverse (cdr l)) (list (car l)))))
+REVERSE
+
+==> (reverse '(a b c d))
+(D C B A) 
+
+==> (let* ((x 5) (y (+ x x)))
+      (if (or (= x 0) (and (< 0 y) (< y 20)))
+          (list x y)
+          (+ y x)))
+(5 10)

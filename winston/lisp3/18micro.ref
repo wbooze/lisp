@@ -1,0 +1,12 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+A 
+(M-LAMBDA (L) (M-FIRST (M-REST L))) 
+B 
+B 
+M-APPEND 
+(A B) 
+(A B) 
+(A B) 

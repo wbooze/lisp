@@ -1,0 +1,18 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD MICRO-CLOS SYSTEM (remove if your Lisp contains CLOS)
+#-:clos
+(load "clos.lisp")
+
+;;;; LOAD SIMULATION PROCEDURES
+(load "20simula.lisp") 
+
+;;;; TEST SIMULATION PROCEDURES
+
+(progn (load "20simula.dta")
+       (simulate *start* 0))

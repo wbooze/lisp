@@ -1,0 +1,17 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+(setf screwdrivers 
+      '((class         color   size    weight  peg)
+	(screwdriver   blue    long    light   (4 2))
+	(screwdriver   black   long    light   (5 2))
+	(screwdriver   red     long    heavy   (6 2))
+	(screwdriver   red     short   light   (7 2))))
+
+(setf hammers
+      '((class         color   size    weight  peg)
+	(hammer	       blue    large   heavy   (4 6))))
+
+(setf wrenches
+      '((class         color   size    weight  peg)
+	(wrench	       gray    small   light   (6 6))
+	(wrench	       gray    large   heavy   (8 6))))

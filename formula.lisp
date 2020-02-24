@@ -30,7 +30,7 @@
   (loop for exp in operands and idx from 0 by 1 do
     (progn
       (unless (zerop idx)
-	(write-string ", " stream))
+	(write-string " " stream))
       (display-formula stream exp)))
   (write-char #\) stream)
   (values))
@@ -118,7 +118,8 @@
     (error "EXPT requires 2 operands"))
   (let ((base-or (clim:with-new-output-record (stream)
 		   (with-parens (stream) (display-formula stream (first operands))))))
-    (multiple-value-bind (cx cy)  (clim:stream-cursor-position stream)
+    ;(display-formula stream (first operands)))))
+     (multiple-value-bind (cx cy)  (clim:stream-cursor-position stream)
       (let* ((*text-size* (superscript-text-size (clim:text-style-size (clim:medium-text-style stream))))
 	      (exponent-or
 		(clim:with-output-to-output-record (stream)
@@ -150,7 +151,7 @@
 		(sum-height (+ (clim:bounding-rectangle-height dividend-or)
 			      (clim:bounding-rectangle-height divisor-or)))
 		(split 1/4)
-		(thickness-ratio 0.65)
+		(thickness-ratio 0.5)
 		(size (* 0.04 sum-height))
 		(thickness (* thickness-ratio size))
 		(y0 (clim:bounding-rectangle-height dividend-or))
@@ -178,7 +179,7 @@
 	  (clim:stream-close-text-output-record stream)
 	  #+nil (clim:replay-output-record combined-or stream))))
     (t (display-formula stream (first operands))
-      (dopairs #'connect-division-operands operands (list stream)))))
+      (dopairs #'connect-division-operands operands (list stream)))))                                                                   
 
 ;; This :around method is where most of the CLIM magic occurs (output is captured into
 ;; presentations, and some formatting kludgery occurs)

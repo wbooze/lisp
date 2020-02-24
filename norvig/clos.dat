@@ -1,0 +1,374 @@
+;;; -*- Mode: Lisp; Syntax: Common-Lisp;  -*-
+;;; Code from Paradigms of Artificial Intelligence Programming
+;;; Copyright (c) 1991 Peter Norvig
+
+> (setf acct (new-account "J. Random Customer" 1000.00)) -> 
+#<CLOSURE 23652465>
+
+> (send acct 'withdraw 500.00) -> 500.0
+
+> (send acct 'deposit 123.45) -> 623.45
+
+> (send acct 'name) -> "J. Random Customer"
+
+> (send acct 'balance) -> 623.45
+
+;;; ==============================
+
+(define-class account (name &optional (balance 0.00))
+              ((interest-rate .06))
+  (withdraw (amt) (if (<= amt balance)
+                      (decf balance amt)
+                      'insufficient-funds))
+  (deposit  (amt) (incf balance amt))
+  (balance  ()    balance)
+  (name     ()    name)
+  (interest ()    (incf balance (* interest-rate balance))))
+
+;;; ==============================
+
+> (setf acct2 (account "A. User" 2000.00)) -> #<CLOSURE 24003064>
+
+> (deposit acct2 42.00) -> 2042.0
+
+> (interest acct2) -> 2164.52
+
+> (balance acct2) -> 2164.52
+
+> (balance acct) -> 623.45
+
+;;; ==============================
+
+(define-class password-account (password acct) ()
+  (change-password (pass new-pass)
+                   (if (equal pass password)
+                       (setf password new-pass)
+                       'wrong-password))
+  (otherwise (pass &rest args)
+             (if (equal pass password)
+                 (apply message acct args)
+                 'wrong-password)))
+
+;;; ==============================
+
+(setf acct3 (password-account "secret" acct2)) -> #<CLOSURE 33427277>
+
+> (balance acct3 "secret") -> 2164.52
+
+> (withdraw acct3 "guess" 2000.00) -> WRONG-PASSWORD
+
+> (withdraw acct3 "secret" 2000.00) -> 164.52
+
+;;; ==============================
+
+(define-class limited-account (limit acct) ()
+  (withdraw  (amt)
+             (if (> amt limit)
+                 'over-limit
+                 (withdraw acct amt)))
+  (otherwise (&rest args)
+             (apply message acct args)))
+
+;;; ==============================
+
+> (setf acct4 (password-account "pass"
+                (limited-account 100.00
+                  (account "A. Thrifty Spender" 500.00)))) ->
+#<CLOSURE 34136775>
+
+> (withdraw acct4 "pass" 200.00) -> OVER-LIMIT
+
+> (withdraw acct4 "pass" 20.00) -> 480.0
+
+> (withdraw acct4 "guess" 20.00) -> WRONG-PASSWORD
+
+;;; ==============================
+
+(defun withdraw (acct amt &optional pass)
+  (cond ((and (typep acct 'password-account)
+              (not (equal pass (account-password acct))))
+         'wrong-password)
+        ((and (typep acct 'limited-account)
+              (> amt (account-limit account)))
+         'over-limit)
+        ((> amt balance)
+         'insufficient-funds)
+        (t (decf balance amt))))
+
+;;; ==============================
+
+(defstruct (limited-account (:include account)) limit)
+
+;;; ==============================
+
+(defclass account ()
+  ((name :initarg :name :reader name)
+   (balance :initarg :balance :initform 0.00 :accessor balance)
+   (interest-rate :allocation :class :initform .06 
+                  :reader interest-rate)))
+
+;;; ==============================
+
+> (setf a1 (make-instance 'account :balance 5000.00
+                          :name "Fred")) -> #<ACCOUNT 26726272>
+
+> (name a1) -> "Fred"
+
+> (balance a1) -> 5000.0
+
+> (interest-rate a1) -> 0.06
+
+;;; ==============================
+
+(defmethod withdraw ((acct account) amt)
+  (if (< amt (balance acct))
+      (decf (balance acct) amt)
+      'insufficient-funds))
+
+;;; ==============================
+
+(defclass limited-account (account)
+  ((limit :initarg :limit :reader limit)))
+
+(defmethod withdraw ((acct limited-account) amt)
+  (if (> amt (limit acct))
+      'over-limit
+      (call-next-method)))
+
+;;; ==============================
+
+> (setf a2 (make-instance 'limited-account
+                          :name "A. Thrifty Spender"
+                          :balance 500.00 :limit 100.00)) ->
+#<LIMITED-ACCOUNT 24155343>
+
+> (name a2) -> "A. Thrifty Spender"
+
+> (withdraw a2 200.00) -> OVER-LIMIT
+
+> (withdraw a2 20.00) -> 480.0
+
+;;; ==============================
+
+(defclass audited-account (account)
+  ((audit-trail :initform nil :accessor audit-trail)))
+
+(defmethod withdraw :before ((acct audited-account) amt)
+  (push (print `(withdrawing ,amt))
+        (audit-trail acct)))
+
+(defmethod withdraw :after ((acct audited-account) amt)
+  (push (print `(withdrawal (,amt) done))
+        (audit-trail acct)))
+
+;;; ==============================
+
+> (setf a3 (make-instance 'audited-account :balance 1000.00))
+#<AUDITED-ACCOUNT 33555607>
+
+> (withdraw a3 100.00)
+(WITHDRAWING 100.0) 
+(WITHDRAWAL (100.0) DONE) 
+900.0
+
+> (audit-trail a3)
+((WITHDRAWAL (100.0) DONE) (WITHDRAWING 100.0))
+
+> (setf (audit-trail a3) nil)
+NIL
+
+;;; ==============================
+
+;;;; The Search Utility in CLOS
+
+(defclass problem ()
+  ((states :initarg :states :accessor problem-states)))
+
+;;; ==============================
+
+(defmethod searcher ((prob problem))
+  "Find a state that solves the search problem."
+  (cond ((no-states-p prob) fail)
+        ((goal-p prob) (current-state prob))
+        (t (let ((current (pop-state prob)))
+             (setf (problem-states prob)
+                   (problem-combiner
+                     prob
+                     (problem-successors prob current)
+                     (problem-states prob))))
+           (searcher prob))))
+
+;;; ==============================
+
+(defmethod current-state ((prob problem))
+  "The current state is the first of the possible states."
+  (first (problem-states prob)))
+
+(defmethod pop-state ((prob problem))
+  "Remove and return the current state."
+  (pop (problem-states prob)))
+
+(defmethod no-states-p ((prob problem))
+  "Are there any more unexplored states?"
+  (null (problem-states prob)))
+
+;;; ==============================
+
+(defmethod searcher :before ((prob problem))
+  (dbg 'search "~&;; Search: ~a" (problem-states prob)))
+
+;;; ==============================
+
+(defclass eql-problem (problem)
+  ((goal :initarg :goal :reader problem-goal)))
+
+(defmethod goal-p ((prob eql-problem))
+  (eql (current-state prob) (problem-goal prob)))
+
+;;; ==============================
+
+(defclass dfs-problem (problem) ()
+  (:documentation "Depth-first search problem."))
+
+(defclass bfs-problem (problem) ()
+  (:documentation "Breadth-first search problem."))
+
+(defmethod problem-combiner ((prob dfs-problem) new old)
+  "Depth-first search looks at new states first."
+  (append new old))
+
+(defmethod problem-combiner ((prob bfs-problem) new old)
+  "Depth-first search looks at old states first."
+  (append old new))
+
+;;; ==============================
+
+(defclass binary-tree-problem (problem) ())
+
+(defmethod problem-successors ((prob binary-tree-problem) state)
+  (let ((n (* 2 state)))
+    (list n (+ n 1))))
+
+;;; ==============================
+
+(defclass binary-tree-eql-bfs-problem
+          (binary-tree-problem eql-problem bfs-problem) ())
+
+> (setf p1 (make-instance 'binary-tree-eql-bfs-problem 
+                          :states '(1) :goal 12))
+#<BINARY-TREE-EQL-BFS-PROBLEM 26725536>
+
+
+> (searcher p1)
+;; Search: (1)
+;; Search: (2 3)
+;; Search: (3 4 5)
+;; Search: (4 5 6 7)
+;; Search: (5 6 7 8 9)
+;; Search: (6 7 8 9 10 11)
+;; Search: (7 8 9 10 11 12 13)
+;; Search: (8 9 10 11 12 13 14 15)
+;; Search: (9 10 11 12 13 14 15 16 17)
+;; Search: (10 11 12 13 14 15 16 17 18 19)
+;; Search: (11 12 13 14 15 16 17 18 19 20 21)
+;; Search: (12 13 14 15 16 17 18 19 20 21 22 23)
+12
+
+;;; ==============================
+
+(defclass best-problem (problem) ()
+  (:documentation "A Best-first search problem."))
+
+(defmethod problem-combiner ((prob best-problem) new old)
+  "Best-first search sorts new and old according to cost-fn."
+  (sort (append new old) #'<
+        :key #'(lambda (state) (cost-fn prob state))))
+
+;;; ==============================
+
+(defmethod cost-fn ((prob eql-problem) state)
+  (abs (- state (problem-goal prob))))
+
+;;; ==============================
+
+(defclass beam-problem (problem)
+  ((beam-width :initarg :beam-width :initform nil
+               :reader problem-beam-width)))
+
+(defmethod problem-combiner :around ((prob beam-problem) new old)
+  (let ((combined (call-next-method)))
+    (subseq combined 0 (min (problem-beam-width prob) 
+                            (length combined)))))
+
+;;; ==============================
+
+(defclass binary-tree-eql-best-beam-problem
+  (binary-tree-problem eql-problem best-problem beam-problem) 
+  ())
+
+> (setf p3 (make-instance 'binary-tree-eql-best-beam-problem 
+                          :states '(1) :goal 12 :beam-width 3))
+#<BINARY-TREE-EQL-BEST-BEAM-PROBLEM 27523251>
+
+> (searcher p3)
+;; Search: (1)
+;; Search: (3 2)
+;; Search: (7 6 2)
+;; Search: (14 15 6)
+;; Search: (15 6 28)
+;; Search: (6 28 30)
+;; Search: (12 13 28)
+12
+
+;;; ==============================
+
+(defclass trip-problem (binary-tree-eql-best-beam-problem) 
+  ((beam-width :initform 1)))
+
+(defmethod cost-fn ((prob trip-problem) city)
+  (air-distance (problem-goal prob) city))
+
+(defmethod problem-successors ((prob trip-problem) city)
+  (neighbors city))
+
+;;; ==============================
+
+> (setf p4 (make-instance 'trip-problem 
+                          :states (list (city 'new-york)) 
+                          :goal (city 'san-francisco)))
+#<TRIP-PROBLEM 31572426>
+
+> (searcher p4)
+;; Search: ((NEW-YORK 73.58 40.47))
+;; Search: ((PITTSBURG 79.57 40.27))
+;; Search: ((CHICAGO 87.37 41.5))
+;; Search: ((KANSAS-CITY 94.35 39.06))
+;; Search: ((DENVER 105.0 39.45))
+;; Search: ((FLAGSTAFF 111.41 35.13))
+;; Search: ((RENO 119.49 39.3))
+;; Search: ((SAN-FRANCISCO 122.26 37.47))
+(SAN-FRANCISCO 122.26 37.47)
+
+;;; ==============================
+
+(defmethod conc ((x null) y) y)
+
+(defmethod conc (x (y null)) x)
+
+(defmethod conc ((x list) (y list))
+  (cons (first x) (conc (rest x) y)))
+
+(defmethod conc ((x vector) (y vector))
+  (let ((vect (make-array (+ (length x) (length y)))))
+    (replace vect x)
+    (replace vect y :start1 (length x))))
+
+;;; ==============================
+
+> (conc nil '(a b c)) -> (A B C)
+
+> (conc '(a b c) nil) -> (A B C)
+
+> (conc '(a b c) '(d e f)) -> (A B C D E F)
+
+> (conc '#(a b c) '#(d e f)) -> #(A B C D E F)

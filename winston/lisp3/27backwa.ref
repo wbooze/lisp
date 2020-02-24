@@ -1,0 +1,14 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+--> X = MAMMAL
+--> X = CARNIVORE
+--> X = CHEETAH
+--> X = BIRD
+--> X = ALBATROSS
+--> ANIMAL = ROBBIE X = MAMMAL
+--> ANIMAL = SUZIE X = BIRD
+--> ANIMAL = ROBBIE X = CARNIVORE
+--> ANIMAL = ROBBIE X = CHEETAH
+--> ANIMAL = SUZIE X = ALBATROSS

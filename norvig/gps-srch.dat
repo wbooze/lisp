@@ -1,0 +1,22 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+(setf start '((c on a) (a on table) (b on table) (space on c)
+              (space on b) (space on table)))
+
+(use (make-block-ops '(a b c)))
+;;;; -> 18
+
+(search-gps start '((a on b) (b on c)))
+;;;; -> ((START)
+;;;;     (EXECUTING (MOVE C FROM A TO TABLE))
+;;;;     (EXECUTING (MOVE B FROM TABLE TO C))
+;;;;     (EXECUTING (MOVE A FROM TABLE TO B)))
+
+(search-gps start '((b on c) (a on b)))
+;;;; -> ((START)
+;;;;     (EXECUTING (MOVE C FROM A TO TABLE))
+;;;;     (EXECUTING (MOVE B FROM TABLE TO C))
+;;;;     (EXECUTING (MOVE A FROM TABLE TO B)))
+

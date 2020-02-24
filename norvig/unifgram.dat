@@ -1,0 +1,275 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+;;; begin grammar snippet
+
+(rule (S (?pred ?subj)) -->
+  (NP ?agr ?subj)
+  (VP ?agr ?pred))
+
+(rule (NP ?agr (?det ?n)) -->
+  (Det ?agr ?det)
+  (N ?agr ?n))
+
+(rule (NP 3sg (the male))          --> (:word he))
+(rule (NP ~3sg (some objects))     --> (:word they))
+(rule (VP 3sg sleep)               --> (:word sleeps))
+(rule (VP ~3sg sleep)              --> (:word sleep))
+(rule (Det ?any the)               --> (:word the))
+(rule (N 3sg (young male human))   --> (:word boy))
+(rule (N 3sg (young female human)) --> (:word girl))
+
+;;; end grammar snippet
+
+;;; begin grammar snippet
+
+(rule (S ?pred) -->
+  (NP ?agr ?subj)
+  (VP ?agr ?subj ?pred))
+
+(rule (VP ?agr ?subj ?pred) -->
+  (Verb/tr ?agr ?subj ?pred ?obj)
+  (NP ?any-agr ?obj))
+
+(rule (VP ?agr ?subj ?pred) -->
+  (Verb/intr ?agr ?subj ?pred))
+
+(rule (Verb/tr ~3sg ?x (kiss ?x ?y) ?y) --> (:word kiss))
+(rule (Verb/tr 3sg ?x (kiss ?x ?y) ?y) --> (:word kisses))
+(rule (Verb/tr ?any  ?x (kiss ?x ?y) ?y) --> (:word kissed))
+
+(rule (Verb/intr ~3sg ?x (sleep ?x)) --> (:word sleep))
+(rule (Verb/intr 3sg ?x (sleep ?x)) --> (:word sleeps))
+(rule (Verb/intr ?any  ?x (sleep ?x)) --> (:word slept))
+
+(rule (NP ?agr ?sem) -->
+  (Name ?agr ?sem))
+
+(rule (NP ?agr (?det-sem ?noun-sem)) -->
+  (Det ?agr ?det-sem)
+  (Noun ?agr ?noun-sem))
+
+(rule (Name 3sg Terry) --> (:word Terry))
+(rule (Name 3sg Jean)  --> (:word Jean))
+
+(rule (Noun 3sg (young male human))           --> (:word boy))
+(rule (Noun 3sg (young female human))         --> (:word girl))
+(rule (Noun ~3sg (group (young male human)))   --> (:word boys))
+(rule (Noun ~3sg (group (young female human))) --> (:word girls))
+
+(rule (Det ?any the)  --> (:word the))
+(rule (Det 3sg a) --> (:word a))
+
+;;; end grammar snippet
+
+;;; begin examples for last snippet
+
+> (?- (S ?sem (The boys kiss a girl) ()))
+?SEM = (KISS (THE (GROUP (YOUNG MALE HUMAN)))
+             (A (YOUNG FEMALE HUMAN))).
+
+> (?- (S ?sem (The girls kissed the girls) ()))
+?SEM = (KISS (THE (GROUP (YOUNG FEMALE HUMAN)))
+             (THE (GROUP (YOUNG FEMALE HUMAN)))).
+
+> (?- (S ?sem (Terry kissed the girl) ()))
+?SEM = (KISS TERRY (THE (YOUNG FEMALE HUMAN))).
+
+> (?- (S ?sem (The girls kisses the boys) ()))
+No.
+
+> (?- (S ?sem (Terry kissed a girls) ()))
+No.
+
+> (?- (S ?sem (Terry sleeps Jean) ()))
+No.
+
+;;; end examples
+
+;;; begin grammar snippet
+
+(rule (Det ?any ?x ?p ?q (the ?x (and ?p ?q)))    --> (:word the))
+(rule (Det 3sg  ?x ?p ?q (exists ?x (and ?p ?q))) --> (:word a))
+(rule (Det 3sg  ?x ?p ?q (all    ?x (-> ?p ?q)))  --> (:word every))
+
+(rule (Noun 3sg ?x (picture ?x)) --> (:word picture))
+(rule (Noun 3sg ?x (story ?x)) --> (:word story))
+(rule (Noun 3sg ?x (and (young ?x) (male ?x) (human ?x))) -->
+  (:word boy))
+
+(rule (NP ?agr ?x ?pred ?pred) -->
+  (Name ?agr ?name))
+
+;(rule (NP ?agr ?x ?pred ?np) -->
+;  (Det ?agr ?x ?noun ?pred ?np)
+;  (Noun ?agr ?x ?noun))
+
+(rule (NP ?agr ?x ?pred ?np) -->
+  (Det ?agr ?x ?noun&rel ?pred ?np)
+  (Noun ?agr ?x ?noun)
+  (rel-clause ?agr ?x ?noun ?noun&rel))
+
+(rule (rel-clause ?agr ?x ?np ?np) --> )
+(rule (rel-clause ?agr ?x ?np (and ?np ?rel)) -->
+  (:word that)
+  (VP ?agr ?x ?rel))
+
+(rule (Verb/tr ~3sg ?x ?y (paint ?x ?y)) --> (:word paint))
+(rule (Verb/tr 3sg  ?x ?y (paint ?x ?y)) --> (:word paints))
+(rule (Verb/tr ?any ?x ?y (paint ?x ?y)) --> (:word painted))
+
+(rule (Verb/intr ~3sg ?x (sleep ?x)) --> (:word sleep))
+(rule (Verb/intr 3sg  ?x (sleep ?x)) --> (:word sleeps))
+(rule (Verb/intr ?any ?x (sleep ?x)) --> (:word slept))
+
+(rule (Verb/intr 3sg  ?x (sells ?x)) --> (:word sells))
+(rule (Verb/intr 3sg  ?x (stinks ?x)) --> (:word stinks))
+
+(rule (VP ?agr ?x ?vp) -->
+  (Verb/tr ?agr ?x ?obj ?verb)
+  (NP ?any-agr ?obj ?verb ?vp))
+
+(rule (VP ?agr ?x ?vp) -->
+  (Verb/intr ?agr ?x ?vp))
+
+(rule (S ?np) -->
+  (NP ?agr ?x ?vp ?np)
+  (VP ?agr ?x ?vp))
+
+;;; end grammar snippet
+
+;;; begin examples for last snippet
+
+Every picture paints a story.
+(ALL ?3 (-> (PICTURE ?3)
+            (EXISTS ?14 (AND (STORY ?14) (PAINT ?3 ?14)))))
+
+Every boy that paints a picture sleeps.
+(ALL ?3 (-> (AND (AND (YOUNG ?3) (MALE ?3) (HUMAN ?3))
+                 (EXISTS ?19 (AND (PICTURE ?19)
+                                  (PAINT ?3 ?19))))
+            (SLEEP ?3)))
+
+Every boy that sleeps paints a picture.
+(ALL ?3 (-> (AND (AND (YOUNG ?3) (MALE ?3) (HUMAN ?3))
+                 (SLEEP ?3))
+            (EXISTS ?22 (AND (PICTURE ?22) (PAINT ?3 ?22)))))
+
+Every boy that paints a picture that sells 
+paints a picture that stinks.
+(ALL ?3 (-> (AND (AND (YOUNG ?3) (MALE ?3) (HUMAN ?3))
+                 (EXISTS ?19 (AND (AND (PICTURE ?19) (SELLS ?19))
+                                  (PAINT ?3 ?19))))
+            (EXISTS ?39 (AND (AND (PICTURE ?39) (STINKS ?39))
+                             (PAINT ?3 ?39)))))
+
+;;; end examples
+
+;;; begin grammar snippet
+
+(rule (S (and ?np ?vp)) -->
+  (NP ?agr ?x ?np)
+  (VP ?agr ?x ?vp))
+
+(rule (VP ?agr ?x (and ?verb ?obj)) -->
+  (Verb/tr ?agr ?x ?o ?verb)
+  (NP ?any-agr ?o ?obj))
+
+(rule (VP ?agr ?x ?verb) -->
+  (Verb/intr ?agr ?x ?verb))
+
+(rule (NP ?agr ?name t) -->
+  (Name ?agr ?name))
+
+(rule (NP ?agr ?x ?det) -->
+  (Det ?agr ?x (and ?noun ?rel) ?det)
+  (Noun ?agr ?x ?noun)
+  (rel-clause ?agr ?x ?rel))
+
+(rule (rel-clause ?agr ?x t) --> )
+(rule (rel-clause ?agr ?x ?rel) -->
+  (:word that)
+  (VP ?agr ?x ?rel))
+
+(rule (Name 3sg Terry)                     --> (:word Terry))
+(rule (Name 3sg Jean)                      --> (:word Jean))
+(rule (Det 3sg  ?x ?restr (all ?x ?restr)) --> (:word every))
+(rule (Noun 3sg ?x (man ?x))               --> (:word man))
+(rule (Verb/tr 3sg ?x ?y (love ?x ?y))     --> (:word loves))
+(rule (Verb/intr 3sg ?x (lives ?x))        --> (:word lives))
+(rule (Det 3sg  ?x ?res (exists ?x ?res))  --> (:word a))
+(rule (Noun 3sg ?x (woman ?x))             --> (:word woman))
+
+;;; end grammar snippet
+
+;;; begin examples for last snippet
+
+(and (all ?4 (and (man ?4) t))
+     (and (love ?4 ?12) (exists ?12 (and (woman ?12) t)))) 
+
+;;; ==============================
+
+(and (all ?m (man ?m))
+     (exists ?w (wowan ?w))
+     (loves ?m ?w))
+
+;;; end examples
+
+;;; begin grammar snippet
+
+(rule (S ?g0 ?g2 (and ?np ?vp)) -->
+  (NP ?g0 ?g1 ?agr ?x ?np)
+  (VP ?g1 ?g2 ?agr ?x ?vp))
+
+(rule (VP ?g0 ?g1 ?agr ?x (and ?obj ?verb)) -->
+  (Verb/tr ?agr ?x ?o ?verb)
+  (NP ?g0 ?g1 ?any-agr ?o ?obj))
+
+(rule (VP ?g0 ?g0 ?agr ?x ?verb) -->
+  (Verb/intr ?agr ?x ?verb))
+
+(rule (NP ?g0 ?g0 ?agr ?name t) -->
+  (Name ?agr ?name))
+
+(rule (NP ?g0 ?g0 ?agr ?x ?det) -->
+  (Det ?agr ?x (and ?noun ?rel) ?det)
+  (Noun ?agr ?x ?noun)
+  (rel-clause ?agr ?x ?rel))
+
+(rule (NP (gap NP ?agr ?x) nogap ?agr ?x t) --> )
+
+(rule (rel-clause ?agr ?x t) --> )
+
+(rule (rel-clause ?agr ?x ?rel) -->
+  (:word that)
+  (S (gap NP ?agr ?x) nogap ?rel))
+
+;;; end grammar snippet
+
+;;; begin examples for last snippet
+
+Every man that __ loves a woman likes a person.
+(AND (ALL ?28 (AND (MAN ?28)
+                   (AND T (AND (LOVE ?28 ?30)
+                               (EXISTS ?30 (AND (WOMAN ?30)
+                                                T))))))
+     (AND (EXISTS ?39 (AND (PERSON ?39) T)) (LIKE ?28 ?39)))
+
+Every man that a woman loves __ likes a person.
+(AND (ALL ?37 (AND (MAN ?37)
+                   (AND (EXISTS ?20 (AND (WOMAN ?20) T))
+                        (AND T (LOVE ?20 ?37)))))
+     (AND (EXISTS ?39 (AND (PERSON ?39) T)) (LIKE ?37 ?39)))
+
+Every man that loves a bird that __ flies likes a person.
+(AND (ALL ?28 (AND (MAN ?28)
+                   (AND T (AND (EXISTS ?54
+                                  (AND (BIRD ?54)
+                                       (AND T (FLY ?54))))
+                               (LOVE ?28 ?54)))))
+     (AND (EXISTS ?60 (AND (PERSON ?60) T)) (LIKE ?28 ?60)))
+
+;;; end examples
+
+;;;; unifgram.dat                     -- 2003-05-16 07:22:24 -- pascal   ;;;;

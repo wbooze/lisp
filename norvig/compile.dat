@@ -1,0 +1,200 @@
+;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;; Code from Paradigms of Artificial Intelligence Programming
+;;; Copyright (c) 1991 Peter Norvig
+
+;;;; First Version of the compiler (compile1.lisp):
+
+> (comp-show '(if (= x y) (f (g x)) (h x y (h 1 2))))
+        ARGS    0       
+        GVAR    X       
+        GVAR    Y       
+        GVAR    =       
+        CALL    2       
+        FJUMP   L1      
+        GVAR    X       
+        GVAR    G       
+        CALL    1       
+        GVAR    F       
+        CALL    1       
+        JUMP    L2      
+L1:     GVAR    X       
+        GVAR    Y       
+        CONST   1       
+        CONST   2       
+        GVAR    H       
+        CALL    2       
+        GVAR    H       
+        CALL    3       
+L2:     RETURN  
+
+;;;; Tail-Recursive version (compile2.lisp):
+
+> (comp-show '(if p (+ x y) (* x y)))
+        ARGS    0       
+        GVAR    P       
+        FJUMP   L1      
+        GVAR    X       
+        GVAR    Y       
+        +       
+        RETURN  
+L1:     GVAR    X       
+        GVAR    Y       
+        *       
+        RETURN  
+
+;;; ==============================
+
+> (comp-show '(begin (if p (+ x y) (* x y)) z))
+        ARGS   0      
+        GVAR   Z      
+        RETURN 
+
+;;; ==============================
+
+> (comp-show '(begin (if p (f x) (* x x)) z))
+        ARGS    0       
+        GVAR    P       
+        FJUMP   L2      
+        SAVE    K1      
+	GVAR    X       
+	GVAR    F       
+	CALLJ   1       
+ K1:    POP     
+ L2:    GVAR    Z       
+	RETURN  
+
+;;; ==============================
+
+> (comp-show '(if (null? (car l)) (f (+ (* a x) b))
+                  (g (/ x 2))))
+        ARGS    0       
+        GVAR    L       
+        CAR     
+        FJUMP   L1      
+        GVAR    X       
+        2       
+        /       
+        GVAR    G       
+        CALLJ   1       
+L1:     GVAR    A       
+        GVAR    X       
+        *       
+        GVAR    B       
+        +       
+        GVAR    F       
+        CALLJ   1             
+
+;;; ==============================
+
+> (comp-show '(define (last1 l)
+                (if (null? (cdr l)) (car l)
+                    (last1 (cdr l)))))
+        ARGS    0       
+        FN      
+                ARGS    1       
+                LVAR    0       0       ;       L       
+                CDR     
+                FJUMP   L1      
+                LVAR    0       0       ;       L       
+                CDR     
+                GVAR    LAST1   
+                CALLJ   1       
+L1:             LVAR    0       0       ;       L       
+                CAR     
+                RETURN  
+        GSET    LAST1   
+        CONST   LAST1   
+        NAME!   
+        RETURN  
+
+;;; ==============================
+
+> (comp-show '(define (length l)
+                (if (null? l) 0 (+ 1 (length (cdr l))))))
+        ARGS    0       
+        FN      
+                ARGS    1       
+                LVAR    0       0       ;       L       
+                FJUMP   L2      
+                1       
+                SAVE    K1      
+                LVAR    0       0       ;       L       
+                CDR     
+                GVAR    LENGTH  
+                CALLJ   1       
+K1:             +       
+                RETURN  
+L2:             0       
+                RETURN  
+        GSET    LENGTH  
+        CONST   LENGTH  
+        NAME!   
+        RETURN  
+
+;;; ==============================
+
+> (comp-show '(define (length l)
+                (letrec ((len (lambda (l n)
+                                (if (null? l) n
+                                    (len (rest l) (+ n 1))))))
+                  (len l 0))))
+        ARGS    0       
+        FN      
+                ARGS    1       
+                NIL     
+                FN      
+                        ARGS    1       
+                        FN      
+                                ARGS    2       
+                                LVAR    0       0       ;       L       
+                                FJUMP   L2      
+                                SAVE    K1      
+                                LVAR    0       0       ;       L       
+                                GVAR    REST    
+                                CALLJ   1       
+K1:                             LVAR    0       1       ;       N       
+                                1       
+                                +       
+                                LVAR    1       0       ;       LEN     
+                                CALLJ   2       
+L2:                             LVAR    0       1       ;       N       
+                                RETURN  
+                        LSET    0       0       ;       LEN     
+                        POP     
+                        LVAR    1       0       ;       L       
+                        0       
+                        LVAR    0       0       ;       LEN     
+                        CALLJ   2       
+                CALLJ   1       
+        GSET    LENGTH  
+        CONST   LENGTH  
+        NAME!   
+        RETURN    
+
+;;; ==============================
+
+> (comp-show '(if (not (and p q (not r))) x y))
+        ARGS    0       
+        GVAR    P       
+        FJUMP   L3      
+        GVAR    Q       
+        FJUMP   L1      
+        GVAR    R       
+        NOT     
+        JUMP    L2      
+L1:     NIL     
+L2:     JUMP    L4      
+L3:     NIL     
+L4:     FJUMP   L5      
+        GVAR    Y       
+        RETURN  
+L5:     GVAR    X       
+        RETURN  
+
+;;;; Peephole optimizer version (compile3.lisp):
+
+> (comp-show '(begin (if (if t 1 (f x)) (set! x 2)) x))
+   0: ARGS    0       
+   1: 2       
+   2: GSET    X       
+   3: RETURN  

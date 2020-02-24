@@ -38,10 +38,3 @@
 	(format (frame-standard-input *application-frame*)
 		"the ~a of ~a~%" date name))
 
-
-
-
-
-
-
-

@@ -742,6 +742,7 @@
 		 (t (list "oldlist: " l ", final: " r)))))
       (values-list (paul-graham:group (rev list) 4)))))
 
+#+clim
 (defun my-reverse5 (list)
   (in-clim (nil-as-list)
     (values-list
@@ -852,6 +853,15 @@
 		 (funcall combiner (funcall term a) result)))))
     (iter a null-value)))
 
+(defun position-of (op seq &optional (init 0))
+  (labels ((accumulate (op seq &optional (init 0))
+             (if (null seq)
+                 init
+                 (funcall op (car seq) (accumulate op (cdr seq) init)))))
+    (let ((result (accumulate op seq)))
+      (position result seq))))
+;; used like (position-of #'max '(1 2 3 4 5 4 3 2 1))
+
 (defun enum (low high)
   (if (> low high)
     nil
@@ -881,6 +891,99 @@
 	(stop stop stop))
     ((> start stop) (nreverse ans))
     (push (funcall fn start) ans)))
+
+
+(defun range (fn start stop &optional (incr 1))
+  (cond
+   ((and (< start stop) (> incr 0)) ;; 1 5 1
+    (do ((ans)
+	 (start start (+ start incr))
+	 (stop stop stop))
+	((> start stop) (nreverse ans))
+	(push (funcall fn start) ans)))
+   ((and (> start stop) (> incr 0)) ;; 5 1 1
+    (do ((ans)
+	 (start start (- start incr))
+	 (stop stop stop))
+	((< start stop) (nreverse ans))
+	(push (funcall fn start) ans)))
+   ((and (> start stop) (< incr 0)) ;; 5 1 -1
+    (do ((ans)
+	 (start start (+ start incr))
+	 (stop stop stop))
+	((< start stop) ans)
+	(push (funcall fn start) ans)))
+   ((and (< start stop) (< incr 0)) ;; 1 5 -1
+    (do ((ans)
+	 (start start (+ start (- incr)))
+	 (stop stop stop))
+	((> start stop) ans)
+	(push (funcall fn start) ans)))
+   (t nil)))
+
+
+;; examples
+;(range 'identity 1 5)
+;(range 'identity 1 5 1)
+;(range 'identity 1 5 -1)
+;(range 'identity 5 1 1)
+;(range 'identity 5 1)
+
+(defun shift (list n)
+  (labels ((range (fn start stop &optional (incr 1))
+		  (cond
+		   ((and (<= start stop) (> incr 0))
+		    (do ((ans)
+			 (start start (+ start incr))
+			 (stop stop stop))
+			((> start stop) (nreverse ans))
+			(push (funcall fn start) ans)))
+		   ((and (>= start stop) (> incr 0))
+		    (do ((ans)
+			 (start start (- start incr))
+			 (stop stop stop))
+			((< start stop) (nreverse ans))
+			(push (funcall fn start) ans)))
+		   ((and (>= start stop) (< incr 0))
+		    (do ((ans)
+			 (start start (+ start incr))
+			 (stop stop stop))
+			((< start stop) (nreverse ans))
+			(push (funcall fn start) ans)))
+		   ((and (<= start stop) (< incr 0))
+		    (do ((ans)
+			 (start start (+ start (- incr)))
+			 (stop stop stop))
+			((> start stop) (nreverse ans))
+			(push (funcall fn start) ans)))
+		   (t nil))))
+	  (let ((ans list) (temp) (k (mod  n (length list))))
+	    (if (> n 0)
+		(setf temp (range (lambda (x) (declare (ignore x)) (pop ans)) k 1 -1))
+	      (setf temp (range (lambda (x) (declare (ignore x)) (pop ans)) -1 (- k) -1)))
+	    (if (= k 0) (setf ans list)
+	      (setf ans (append ans temp)))
+	    ans)))
+
+;; examples
+;(shift '(a b c d) 0)
+;(shift '(a b c d) 1)
+;(shift '(a b c d) 5)
+
+;(shift '(a b c d) 1)
+;(shift '(a b c d) -1)
+
+;(shift '(a b c d) 2)
+;(shift '(a b c d) -2)
+
+;(shift '(a b c d) 3)
+;(shift '(a b c d) -3)
+
+;(shift '(a b c d) 4)
+;(shift '(a b c d) -4)
+
+;(shift '(a b c d) -4)
+;(shift '(a b c d) -5)
 
 (defun sum (fn start stop)
   (labels ((range (fn start stop &optional (incr 1))
@@ -1220,7 +1323,7 @@
 
 (defun lottery4 (&optional (p ()))
   (let ((result))
-    (push (mapc (lambda (x) (1+ (random x))) '(49 49 49 49 49 49)) result)
+    (push (mapcar (lambda (x) (1+ (random x))) '(49 49 49 49 49 49)) result)
     (if p
       (values-list (nreverse (car result)))
       (nreverse (car result)))))
@@ -1617,7 +1720,7 @@ counting nil as an atom only in non-tail position"
 	 (shuffle (cdr x) (cdr y))))))
 
 (defun remove-brackets (lst)
-  "reduses lists with just one item to the item itself"
+  "reduces lists with just one item to the item itself"
   (do ((result lst (car result))) ((or (not (consp result)) (not (null (cdr result)))) result)))
 
 (defun separate-list (lst separator test)
@@ -1661,14 +1764,25 @@ counting nil as an atom only in non-tail position"
 
 (defun pre2in (expr)
   "translate prefix to infix expressions.
-  handles operators with any number of args."
+handles operators with any number of args."
   (if (atom expr)
-    expr
-    (intersperse (car expr) (mapcar #'pre2in (cdr expr)))))
+      expr
+      (intersperse (car expr) (mapcar #'pre2in (cdr expr)))))
+
+(defun pre2in (expr)
+  "translate prefix to infix expressions.
+  handles operators with any number of args."
+  (let ((result
+         (if (atom expr)
+             expr
+             (intersperse (car expr) (mapcar #'pre2in (cdr expr)))))
+        (seps '((setf . =) (setq . =) (expt . ^) (rem . |\\|) (mod . |\\|))))
+    (setf result (sublis seps result))
+    result))
 
 (defun in2pre (infix-expr &key (test #'eql))
   "converts an infix expression to prefix"
-  (let ((result infix-expr) (separators '(+ - * / =)))
+  (let ((result infix-expr) (separators '(+ - * / = ^ ** setf setq expt)))
     (dolist (sep separators) (setf result (separate-tree result sep test)))
     (remove-brackets result)))
 
@@ -1700,6 +1814,7 @@ counting nil as an atom only in non-tail position"
 	(t
 	  (with-input-from-string (s result) (values (intern (read-line s)) (intern (read-line s)))))))))
 
+#+clim
 (defun clmdate ()
   (clim:with-drawing-options (*standard-output* 
 			       :ink climi::+darkgoldenrod+ 
@@ -2206,3 +2321,16 @@ is replaced with replacement."
     (uniq
       (cdr list-in)
       (adjoin (car list-in) list-out :test 'equal))))
+
+(defun random-uniq-seq (seq count &optional multi)
+  (let ((result))
+      (loop until (= (length result) count) do
+	    (setf result
+		  (adjoin (elt seq (random (length seq))) result)))
+            (if multi
+                (values-list (sort (copy-seq result) #'<))
+                (sort (copy-seq result) #'<))))
+
+(defun lotto-numbers ()
+  (values-list
+  (loop repeat 12 collect (random-uniq-seq (enum 1 49) 6))))

@@ -1,0 +1,46 @@
+;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;; Code from Paradigms of Artificial Intelligence Programming
+;;; Copyright (c) 1991 Peter Norvig
+
+> (gps '(son-at-home car-needs-battery have-money have-phone-book)
+       '(son-at-school)
+       *school-ops*)
+(EXECUTING LOOK-UP-NUMBER) 
+(EXECUTING TELEPHONE-SHOP) 
+(EXECUTING TELL-SHOP-PROBLEM) 
+(EXECUTING GIVE-SHOP-MONEY) 
+(EXECUTING SHOP-INSTALLS-BATTERY) 
+(EXECUTING DRIVE-SON-TO-SCHOOL) 
+SOLVED
+
+> (gps '(son-at-home car-needs-battery have-money)
+       '(son-at-school)
+       *school-ops*)
+NIL 
+
+> (gps '(son-at-home car-works)
+       '(son-at-school)
+       *school-ops*)
+(EXECUTING DRIVE-SON-TO-SCHOOL) 
+SOLVED
+
+;;; ==============================
+
+> (gps '(son-at-home have-money car-works)
+       '(have-money son-at-school)
+       *school-ops*)
+(EXECUTING DRIVE-SON-TO-SCHOOL) 
+SOLVED
+
+;;; ==============================
+
+> (gps '(son-at-home car-needs-battery have-money have-phone-book)
+       '(have-money son-at-school)
+       *school-ops*)
+(EXECUTING LOOK-UP-NUMBER) 
+(EXECUTING TELEPHONE-SHOP) 
+(EXECUTING TELL-SHOP-PROBLEM) 
+(EXECUTING GIVE-SHOP-MONEY) 
+(EXECUTING SHOP-INSTALLS-BATTERY) 
+(EXECUTING DRIVE-SON-TO-SCHOOL) 
+SOLVED

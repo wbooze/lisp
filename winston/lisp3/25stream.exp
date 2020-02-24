@@ -1,0 +1,25 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD STREAM PROCEDURES
+(load "25stream.lisp")
+
+;;;; TEST  STREAM PROCEDURES
+
+(progn
+  (setf test-stream
+	(stream-cons (progn (format t "~%Evaluating element A") 'A)
+		     (stream-cons
+		       (progn (format t "~%Evaluating element B") 'B)
+		       (make-empty-stream))))
+  (print (stream-first test-stream))
+  (print (stream-first (stream-rest test-stream)))
+  (print (stream-first test-stream))
+  (print (stream-first (stream-rest test-stream)))
+  (print (stream-first test-stream))
+  (print (stream-first (stream-rest test-stream)))
+  (values))

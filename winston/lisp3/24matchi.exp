@@ -1,0 +1,47 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD MATCHING PROCEDURES
+(load "24matchi.lisp")
+
+;;;; TEST MATCHING PROCEDURES
+
+#| PRINT embedding facilitates automatic testing |#
+
+(print (match '(color (? x) red)
+	      '(color apple red))) 
+(print (match '(color apple (? y))
+	      '(color apple red))) 
+(print (match '(color (? x) (? y))
+	      '(color apple red)))
+(print (match '(color apple red)
+	      '(color apple red))) 
+(print (match '(color (? \_) red)
+	      '(color apple red))) 
+(print (match '(color (? \_) (? \_))
+	      '(color apple red)))
+(print (match '(color apple orange)
+	      '(color apple red))) 
+(print (match '(color (? x) (? x))
+	      '(color apple red)))
+(print (match '(((? p) is-a person) with (hair (? h)))
+	      '((patrick is-a person) with (hair blond)))) 
+(print (unify '(color (? x) (? y))
+	      '(color apple red)))
+(print (unify '(color apple red)
+	      '(color (? l) (? m))))
+(print (unify '(color (? x) (? y))
+	      '(color (? l) (? m))))
+(print (unify '(color (? x) (? y))
+	      '(color (? x) (? y))))
+(print (unify '((? x) with (hair blond))
+	      '((patrick is-a person) with (hair blond))))
+(print (unify '((? x) with (hair blond))
+	      '((patrick is-a (? y)) with (hair blond))))
+(print (unify '((? x) with (hair blond))
+	      '((patrick is-a (? x)) with (hair blond))))
+

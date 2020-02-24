@@ -1,0 +1,54 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD MICRO INTERPRETER
+(load "18micro.lisp")
+
+;;;; TEST MICRO INTERPRETER
+
+#| PRINT embedding facilitates automatic testing |#
+
+(print (micro-eval '(m-first (m-quote (a b c)))))
+
+(print (setf (get 'm-second 'm-lambda) 
+      '(m-lambda (l) (m-first (m-rest l)))))
+
+(print (micro-eval '(m-second (m-quote (a b c)))))
+
+(print (micro-eval '((m-lambda (l) (m-first (m-rest l)))
+	      (m-quote (a b c)))))
+
+(print (micro-eval '(m-defun m-append (l1 l2)
+		      (m-if (m-endp l1)
+			    l2
+			    (m-cons (m-first l1)
+				    (m-append (m-rest l1) l2))))))
+
+(print (micro-eval '(m-apply
+	       (m-quote (m-lambda (x y)
+				  (m-cons x (m-cons y nil))))
+	       (m-quote (a b)))))
+
+(print (micro-eval '(m-apply
+                 (m-quote
+                   (m-lambda (x y)
+                     (m-apply
+                       (m-quote
+                         (m-lambda (l m)
+                           (m-cons l (m-cons m nil))))
+                       (m-cons x (m-cons y nil)))))
+                 (m-quote (a b)))))
+
+(print (micro-eval '(m-apply
+                 (m-function
+                   (m-lambda (x y)
+                     (m-apply
+                       (m-function
+                         (m-lambda ()
+                           (m-cons x (m-cons y nil))))
+                       (m-quote ()))))
+                 (m-quote (a b)))))

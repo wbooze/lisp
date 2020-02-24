@@ -19,19 +19,16 @@
   (funcall list)
   list)
 
-
-
 (defun take (n list &optional (collect nil))
   (eval `(loop repeat ,n
         ,(if collect 'collect 'do) (funcall ,list))))
 
-
-
 (defun fib ()
-  (fcons (fcons 1 1)
+  (fcons 1
+     (fcons 1
          (fmap (lambda (x)
-                 (+ (car x) (cdr x)))
-               (zip (ftail (fib)) (ftail (fib))))))
+                 (+ (car x) (cadr x)))
+               (zip (fib) (ftail (fib)))))))
 
 (defun fib-gen ()
   (let ((q (cons 1 1)))

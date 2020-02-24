@@ -4,6 +4,9 @@
 	     :test #'string=)))
     (if x (cdr x) default)))
 
+#+sbcl
+(require 'sb-posix)
+
 (defvar symbols nil)
 
 (do-all-symbols (sym)

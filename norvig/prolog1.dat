@@ -1,0 +1,41 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+(<- (likes Kim Robin))
+(<- (likes Sandy Lee))
+(<- (likes Sandy Kim))
+(<- (likes Robin cats))
+(<- (likes Sandy ?x) (likes ?x cats))
+(<- (likes Kim ?x) (likes ?x Lee) (likes ?x Kim))
+(<- (likes ?x ?x))
+
+(?- (likes Sandy ?who))
+;;;; ?WHO = LEE;
+;;;; ?WHO = KIM;
+;;;; ?WHO = ROBIN;
+;;;; ?WHO = SANDY;
+;;;; ?WHO = CATS;
+;;;; ?WHO = SANDY;
+
+(?- (likes ?who Sandy))
+;;;; ?WHO = SANDY;
+;;;; ?WHO = KIM;
+;;;; ?WHO = SANDY;
+
+(?- (likes Robin Lee))
+;;;; No.
+
+(?- (likes ?x ?y) (likes ?y ?x))
+;;;; ?Y = KIM
+;;;; ?X = SANDY;
+;;;; ?Y = SANDY
+;;;; ?X = SANDY;
+;;;; ?Y = SANDY
+;;;; ?X = SANDY;
+;;;; ?Y = SANDY
+;;;; ?X = KIM;
+;;;; ?Y = SANDY
+;;;; ?X = SANDY;
+;;;; ?Y = ?X3251
+;;;; ?X = ?X3251;

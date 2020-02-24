@@ -1,0 +1,16 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+Time 0: starting SELECT.
+Time 4: finishing SELECT.
+Time 4: starting DESIGN.
+Time 4: starting NEGOTIATE.
+Time 8: finishing DESIGN.
+Time 10: finishing NEGOTIATE.
+Time 10: starting FURNISH.
+Time 10: starting PREPARE.
+Time 17: finishing PREPARE.
+Time 18: finishing FURNISH.
+Time 18: starting MOVE.
+Time 19: finishing MOVE.

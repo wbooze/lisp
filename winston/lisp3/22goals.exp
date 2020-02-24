@@ -1,0 +1,29 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD MICRO-CLOS SYSTEM (remove if your Lisp contains CLOS)
+#-:clos
+(load "clos.lisp")
+
+;;;; LOAD BLOCKS PROCEDURES
+(load "21blocks.lisp")
+
+;;;; LOAD GOAL-TREE PROCEDURES
+(load "22goals.lisp")
+
+;;;; TEST GOAL-TREE PROCEDURES
+
+(progn
+  (load "21blocks.dta")
+  (put-on b4 b1)
+  (put-on w7 b2)
+  (setf *current-node* (make-instance 'node))
+  (put-on b1 b2)
+  (show-simple-tree *current-node*))
+(tell-why get-rid-of w7)
+(tell-why make-space b1 b2)
+(tell-why put-on b1 b2)

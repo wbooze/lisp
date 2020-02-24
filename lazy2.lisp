@@ -1,7 +1,7 @@
 (defpackage my-lazy
   (:use :cl)
   (:shadow cl:car cl:cdr cl:mapcar)
-  (:export "CAR" "CDR" "MAPCAR" "DELAY" "FORCE" "REPEAT"))
+  (:export #:car #:cdr #:mapcar #:delay #:force #:repeat))
 
 (in-package :my-lazy)
 
@@ -12,17 +12,17 @@
 
 (defun single-arg-as-string (arg)
   (let ((sarg (string arg)))
-    (when (string-equal "%" sarg)
+    (if (string-equal "%" sarg)
       sarg)))
 
 (defun arc-arg-as-string (arg)
   (let ((sarg (string arg)))
-    (when (string-equal "_" sarg)
+    (if (string-equal "_" sarg)
       sarg)))
 
 (defun rest-arg-as-string (arg)
   (let ((sarg (string arg)))
-    (when (string-equal "%&" sarg)
+    (if (string-equal "%&" sarg)
       sarg)))
 
 (defun flatten (l)
@@ -67,7 +67,7 @@
 (defmethod to-string ((arg integer)) (write-to-string arg))
 
 (defun str (&rest args)
-  (apply 'concatenate-string  (mapcar #'to-string args)))
+  (apply 'concatenate 'string (mapcar #'to-string args)))
 
 (defstruct thunk
   body)
@@ -75,28 +75,28 @@
 (defun thunkp (arg)
   (eq (type-of arg) 'thunk))
 
-(defmacro delay (expr)
+(defmacro my-lazy:delay (expr)
   `(make-thunk
    :body (lambda () ,expr)))
 
-(defun force (thunk)
+(defun my-lazy:force (thunk)
   (if (thunkp thunk)
       (funcall (thunk-body thunk))
       thunk))
 
-(defun repeat (arg)
+(defun my-lazy:repeat (arg)
   (cons arg
     (delay (repeat arg))))
 
-(defun car (cons)
+(defun my-lazy:car (cons)
   "car for lists, force car for thunks"
   (force (cl:car cons)))
 
-(defun cdr (cons)
+(defun my-lazy:cdr (cons)
   "cdr for lists, force cdr for thunks"
   (force (cl:cdr cons)))
 
-(defun mapcar (f list &rest more-lists)
+(defun my-lazy:mapcar (f list &rest more-lists)
   "Apply FUNCTION to successive elements of LIST. 
 Return list of FUNCTION return values.
 lists can be lazy"
@@ -107,7 +107,6 @@ lists can be lazy"
       (apply 'mapcar
          f
          (cdr list)
-
              (cl:mapcar 'cdr more-lists)))))
 
 (defun partial (f &rest args)

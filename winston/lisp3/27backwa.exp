@@ -1,0 +1,30 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD MATCHING PROCEDURES
+
+(load "24matchi.lisp")
+
+;;;; LOAD STREAM PROCEDURES
+
+(load "25stream.lisp")
+
+;;;; LOAD BACKWARD-CHAINING PROCEDURES
+
+(load "27backwa.lisp")
+
+;;;; LOAD BACKWARD-CHAINING DATA
+
+(load "27backwa.dta")
+
+;;;; TEST BACKWARD-CHAINING PROCEDURES
+
+(backward-chain '(robbie is a cheetah))
+(backward-chain '(suzie is a albatross))
+(backward-chain '(robbie is a (? x)))
+(backward-chain '(suzie is a (? x)))
+(backward-chain '((? animal) is a (? x)))

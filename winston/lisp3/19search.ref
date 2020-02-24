@@ -1,0 +1,28 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+(S A D) 
+(S) 
+(S A) 
+(S A B) 
+(S A B C) 
+(S A B E) 
+(S A B E D) 
+(S) 
+(S A) 
+(S D) 
+(S A B) 
+(S A D) 
+(S D A) 
+(S D E) 
+(S A B C) 
+(S A B E) 
+(S A D E) 
+(S D A B) 
+(S D E B) 
+(S) 
+(S A) 
+(S A B) 
+(S A B C) 
+(S A B E) 

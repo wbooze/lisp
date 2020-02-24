@@ -1,0 +1,171 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+(debug :search)
+;;;; -> (SEARCH)
+
+(breadth-first-search 1 (is 12) 'binary-tree)
+;; Search: (1)
+;; Search: (2 3)
+;; Search: (3 4 5)
+;; Search: (4 5 6 7)
+;; Search: (5 6 7 8 9)
+;; Search: (6 7 8 9 10 11)
+;; Search: (7 8 9 10 11 12 13)
+;; Search: (8 9 10 11 12 13 14 15)
+;; Search: (9 10 11 12 13 14 15 16 17)
+;; Search: (10 11 12 13 14 15 16 17 18 19)
+;; Search: (11 12 13 14 15 16 17 18 19 20 21)
+;; Search: (12 13 14 15 16 17 18 19 20 21 22 23)
+;;;; -> 12
+
+(depth-first-search 1 (is 12) (finite-binary-tree 15))
+;; Search: (1)
+;; Search: (2 3)
+;; Search: (4 5 3)
+;; Search: (8 9 5 3)
+;; Search: (9 5 3)
+;; Search: (5 3)
+;; Search: (10 11 3)
+;; Search: (11 3)
+;; Search: (3)
+;; Search: (6 7)
+;; Search: (12 13 7)
+;;;; -> 12
+
+(best-first-search 1 (is 12) #'binary-tree (diff 12))
+;; Search: (1)
+;; Search: (3 2)
+;; Search: (7 6 2)
+;; Search: (14 15 6 2)
+;; Search: (15 6 2 28 29)
+;; Search: (6 2 28 29 30 31)
+;; Search: (12 13 2 28 29 30 31)
+;;;; -> 12
+
+(best-first-search 1 (is 12) #'binary-tree (price-is-right 12))
+;; Search: (1)
+;; Search: (3 2)
+;; Search: (7 6 2)
+;; Search: (6 2 14 15)
+;; Search: (12 2 13 14 15)
+;;;; -> 12
+
+(beam-search 1 (is 12) #'binary-tree (price-is-right 12) 2)
+;; Search: (1)
+;; Search: (3 2)
+;; Search: (7 6)
+;; Search: (6 14)
+;; Search: (12 13)
+;;;; -> 12
+
+(beam-search 1 (is 12) #'binary-tree (diff 12) 2)
+;; Search: (1)
+;; Search: (3 2)
+;; Search: (7 6)
+;; Search: (14 15)
+;; Search: (15 28)
+;; Search: (28 30)
+;; Search: (30 56)
+;; Search: (56 60)
+;; Search: (60 112)
+;; Search: (112 120)
+;; Search: (120 224)
+;;;; -> [Abort]
+
+(trip (city 'san-francisco) (city 'boston))
+;; Search: ((SAN-FRANCISCO 122.26 37.47))
+;; Search: ((RENO 119.49 39.3))
+;; Search: ((GRAND-JCT 108.37 39.05))
+;; Search: ((DENVER 105.0 39.45))
+;; Search: ((KANSAS-CITY 94.35 39.06))
+;; Search: ((INDIANAPOLIS 86.1 39.46))
+;; Search: ((PITTSBURGH 79.57 40.27))
+;; Search: ((BOSTON 71.05 42.21))
+;;;; -> (BOSTON 71.05 42.21)
+
+(trip (city 'boston) (city 'san-francisco))
+;; Search: ((BOSTON 71.05 42.21))
+;; Search: ((PITTSBURGH
+ 79.57 40.27))
+;; Search: ((CHICAGO 87.37 41.5))
+;; Search: ((KANSAS-CITY 94.35 39.06))
+;; Search: ((DENVER 105.0 39.45))
+;; Search: ((FLAGSTAFF 111.41 35.13))
+;; Search: ((RENO 119.49 39.3))
+;; Search: ((SAN-FRANCISCO 122.26 37.47))
+;;;; -> (SAN-FRANCISCO 122.26 37.47)
+
+(show-city-path (trip (city 'san-francisco) (city 'boston) 1))
+;;;; -> #<Path 4514.8 km: San-Francisco - Reno - Grand-Jct - Denver - 
+          Kansas-City - Indianapolis - Pittsburgh - Boston>
+
+(show-city-path (trip (city 'boston) (city 'san-francisco) 1))
+;;;; -> #<Path 4577.3 km: Boston - Pittsburgh - Chicago - Kansas-City -
+          Denver - Grand-Jct - Reno - San-Francisco>
+
+(show-city-path (trip (city 'boston) (city 'san-francisco) 3))
+;;;; -> #<Path 4514.8 km: Boston - Pittsburgh - Indianapolis -
+          Kansas-City - Denver - Grand-Jct - Reno - San-Francisco>
+
+(iter-wide-search 1 (is 12) (finite-binary-tree 15) (diff 12)) 
+; Width: 1
+;; Search: (1)
+;; Search: (3)
+;; Search: (7)
+;; Search: (14)
+;; Search: NIL
+; Width: 2
+;; Search: (1)
+;; Search: (3 2)
+;; Search: (7 6)
+;; Search: (14 15)
+;; Search: (15)
+;; Search: NIL
+; Width: 3
+;; Search: (1)
+;; Search: (3 2)
+;; Search: (7 6 2)
+;; Search: (14 15 6)
+;; Search: (15 6)
+;; Search: (6)
+;; Search: (12 13)
+;;;; -> 12
+
+(tree-search '(1) (is 6) #'next2 #'prepend)
+;; Search: (1)
+;; Search: (2 3)
+;; Search: (3 3 4)
+;; Search: (3 4 4 5)
+;; Search: (4 4 5 4 5)
+;; Search: (4 5 4 5 5 6)
+;; Search: (5 4 5 5 6 5 6)
+;; Search: (4 5 5 6 5 6 6 7)
+;; Search: (5 5 6 5 6 6 7 5 6)
+;; Search: (5 6 5 6 6 7 5 6 6 7)
+;; Search: (6 5 6 6 7 5 6 6 7 6 7)
+;;;; -> 6
+
+(graph-search '(1) (is 6) #'next2 #'prepend)
+;; Search: (1)
+;; Search: (2 3)
+;; Search: (3 4)
+;; Search: (4 5)
+;; Search: (5 6)
+;; Search: (6 7)
+;;;; -> 6
+
+(path-states
+    (a*-search (list (make-path :state 1)) (is 6) 
+               #'next2 #'(lambda (x y) 1) (diff 6)))
+;; Search: (#<Path to 1 cost 0.0>)
+;; Search: (#<Path to 3 cost 4.0> #<Path to 2 cost 5.0>)
+;; Search: (#<Path to 5 cost 3.0> #<Path to 4 cost 4.0> 
+            #<Path to 2 cost 5.0>)
+;; Search: (#<Path to 6 cost 3.0> #<Path to 7 cost 4.0> 
+            #<Path to 4 cost 4.0> #<Path to 2 cost 5.0>)
+;;;; -> (6 5 3 1)
+
+
+

@@ -1,0 +1,109 @@
+;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;; Code from Paradigms of Artificial Intelligence Programming
+;;; Copyright (c) 1991 Peter Norvig
+
+> (scheme)
+=> (+ 1 (call/cc (lambda (cc) (+ 20 300))))
+321
+
+;;; ==============================
+
+((lambda (val) (+ 1 val)) 
+ (+ 20 300))
+
+;;; ==============================
+
+=> (+ 1 (call/cc (lambda (cc) (+ 20 (cc 300)))))
+301
+
+;;; ==============================
+
+((lambda (val) (+ 1 val))
+ 300)
+
+;;; ==============================
+
+(define (print-table l)
+  (call/cc
+    (lambda (escape)
+      (set! not-a-number escape)
+      (map print-sqrt-abs l))))
+
+(define (print-sqrt-abs x)
+  (write (sqrt (abs (must-be-number x)))))
+
+(define (must-be-number x)
+  (if (numberp x) x
+      (not-a-number "huh?")))
+
+(define (map fn l)
+  (if (null? l)
+      '()
+      (cons (fn (first l))
+            (map fn (rest l)))))
+
+;;; ==============================
+
+=> (+ 1 (call/cc (lambda (cc)
+                   (set! old-cc cc)
+                   (+ 20 (cc 300)))))
+301
+
+=> (old-cc 500)
+501
+
+;;; ==============================
+
+> (+ 1 (catch 'tag (+ 20 (throw 'tag 300))))
+301
+
+> (throw 'tag 500)
+Error: there was no pending CATCH for the tag TAG
+
+;;; ==============================
+
+(define (integer) (amb 1 (+ 1 (integer))))
+
+;;; ==============================
+
+(define (prime)
+  (let ((n (integer)))
+    (if (prime? n) n (fail))))
+
+;;; ==============================
+
+(def-scheme-macro amb (x y)
+  `(random-choice (lambda () ,x) (lambda () ,y))))
+
+;;; ==============================
+
+(define backtrack-points nil)
+
+(define (fail)
+  (let ((last-choice (car backtrack-points)))
+    (set! backtrack-points (cdr backtrack-points))
+    (last-choice)))
+
+(define (random-choice f g)
+  (if (= 1 (random 2))
+      (choose-first f g)
+      (choose-first g f)))
+
+(define (choose-first f g)
+  (call/cc
+    (lambda (k)
+      (set! backtrack-points
+            (cons (lambda () (k (g))) backtrack-points))
+      (f))))
+
+;;; ==============================
+
+(call/cc (lambda (cc) (set! reset (lambda () 
+                                    (cc "Back to top level")))))
+
+;;; ==============================
+
+(defun call/cc (computation)
+  "Call computation, passing it the current continuation.
+  The continuation has only dynamic extent."
+  (funcall computation #'(lambda (x) (return-from call/cc x))))

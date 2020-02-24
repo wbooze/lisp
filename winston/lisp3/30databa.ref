@@ -1,0 +1,32 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+| CLASS       | COLOR | SIZE  | WEIGHT | PEG   |
+| ----------- | ----- | ----- | ------ | ----- |
+| SCREWDRIVER | BLUE  | LONG  | LIGHT  | (4 2) |
+| SCREWDRIVER | BLACK | LONG  | LIGHT  | (5 2) |
+| SCREWDRIVER | RED   | LONG  | HEAVY  | (6 2) |
+| SCREWDRIVER | RED   | SHORT | LIGHT  | (7 2) |
+4
+| CLASS       | COLOR | SIZE  | WEIGHT | PEG   |
+| ----------- | ----- | ----- | ------ | ----- |
+| SCREWDRIVER | RED   | LONG  | HEAVY  | (6 2) |
+| SCREWDRIVER | RED   | SHORT | LIGHT  | (7 2) |
+| SIZE  | WEIGHT |
+| ----- | ------ |
+| LONG  | LIGHT  |
+| LONG  | HEAVY  |
+| SHORT | LIGHT  |
+| CLASS  | COLOR | SIZE  | WEIGHT | PEG   |
+| ------ | ----- | ----- | ------ | ----- |
+| HAMMER | BLUE  | LARGE | HEAVY  | (4 6) |
+| CLASS  | COLOR | SIZE  | WEIGHT | PEG   |
+| ------ | ----- | ----- | ------ | ----- |
+| WRENCH | GRAY  | SMALL | LIGHT  | (6 6) |
+| WRENCH | GRAY  | LARGE | HEAVY  | (8 6) |
+| CLASS  | COLOR | SIZE  | WEIGHT | PEG   |
+| ------ | ----- | ----- | ------ | ----- |
+| HAMMER | BLUE  | LARGE | HEAVY  | (4 6) |
+| WRENCH | GRAY  | SMALL | LIGHT  | (6 6) |
+| WRENCH | GRAY  | LARGE | HEAVY  | (8 6) |

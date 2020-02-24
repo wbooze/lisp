@@ -1,0 +1,93 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD MATHEMATICS PROCEDURES
+
+(load "32mathem.lisp")
+
+;;;; TEST MATHEMATICS PROCEDURES
+
+#| PRINT embedding facilitates automatic testing |#
+
+;;; INFIX TO PREFIX
+
+(print (inf-to-pre '(total = principal * (1.0 + interest) \carret years)))
+
+;;; SPARSE MATRICES
+
+(print (sparse-scale-v 2 '((1 1.2) (3 3.4) (6 -6.7))))
+
+(print (sparse-dot-product '((1 2) (3 3) (6 4))
+			   '((1 1) (6 3))))
+(print (sparse-v-plus '((1 2) (3 3) (6 4))
+		      '((1 1) (6 3))))
+(print (sparse-m-times '((1 ((2 2))) (2 ((1 1))) (3 ((3 1))))
+		       '((1 ((2 3))) (2 ((3 3))) (3 ((1 4))))))
+
+;;; ROOTS
+
+#| Note that old GCLISP does not have complex numbers. |#
+
+#-gclisp
+(print (check-quadratic -1 2 0))              ;Tests branches 1 and 3.
+; For x = 0, the quadratic yields 0.
+; For x = 2, the quadratic yields 0.
+
+#-gclisp
+(print (check-quadratic 0 2 4))               ;Tests branch 2.
+; For x = -2, the quadratic yields 0.
+
+#-gclisp
+(print (check-quadratic 1 2 2))                       ;Tests first branch.
+; For x = \#C(-1 1), the quadratic yields 0.
+; For x = \#C(-1 -1), the quadratic yields 0.
+
+#-gclisp
+(print (check-quadratic 1 4 4))                       ;Tests second branch.
+; For x = -2, the quadratic yields 0.
+; For x = -2, the quadratic yields 0.
+
+#-gclisp
+(print (check-quadratic 1 5 6))                       ;Tests third branch.
+; For x = -2, the quadratic yields 0.
+; For x = -3, the quadratic yields 0.
+
+#-gclisp
+(print (check-quadratic 1 -5 6))                      ;Tests fourth branch.
+; For x = 3, the quadratic yields 0.
+; For x = 2, the quadratic yields 0.
+
+#-gclisp
+(print (check-cubic -1 2 3 0))             ;Tests first and third clauses. 
+; For x = 0, the cubic yields 0.
+; For x = 3, the cubic yields 0.
+; For x = -1, the cubic yields 0.
+
+#-gclisp
+(print (check-cubic 0 1 5 6))              ;Tests second clause.
+; For x = -2, the cubic yields 0.
+; For x = -3, the cubic yields 0.
+
+#-gclisp
+(print (check-cubic 1 10 31 30))                  ;Tests \sy{cubic-real}.
+; For x = -2.0, the cubic yields 0.0.
+; For x = -3.0, the cubic yields 0.0.
+; For x = -5.0, the cubic yields 0.0.
+
+#-gclisp
+(print (check-cubic 1 5 8 6))                     ;Tests \sy{cubic-conjugate}.
+; For x = -3.0, the cubic yields 0.0.
+; For x = \#C(-1.0 1.0), the cubic yields \#C(0.0 0.0).
+; For x = \#C(-1.0 -1.0), the cubic yields \#C(0.0 0.0).
+
+#-gclisp
+(print (check-quartic 1 1 -5 1 -6))
+; For x = #C(0.0 1.0), the quartic yields #C(0.0 0.0).
+; For x = #C(0.0 -1.0), the quartic yields #C(0.0 0.0).
+; For x = 2.0, the quartic yields 0.0.
+; For x = -3.0, the quartic yields 0.0.
+

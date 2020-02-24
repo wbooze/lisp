@@ -1,0 +1,122 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+;;;; Sample diagrams to label:
+
+(defdiagram cube
+  (a Y b c d)
+  (b W g e a)
+  (c W e f a)
+  (d W f g a)
+  (e L c b)
+  (f L d c)
+  (g L b d))
+
+(print-labelings (diagram 'cube))
+
+(print-labelings (ground (diagram 'cube) 'g 'd))
+
+(defdiagram cube-on-plate
+  (a Y b c d)
+  (b W g e a)
+  (c W e f a)
+  (d W f g a)
+  (e L c b)
+  (f Y d c i)
+  (g Y b d h)
+  (h W l g j)
+  (i W f m j)
+  (j Y h i k)
+  (k W m l j)
+  (l L h k)
+  (m L k i))
+
+(print-labelings (ground (diagram 'cube-on-plate) 'k 'm))
+
+(defdiagram poiuyt
+  (a L b g)
+  (b L j a)
+  (c L d l)
+  (d L h c)
+  (e L f i)
+  (f L k e)
+  (g L a l)
+  (h L l d)
+  (i L e k)
+  (j L k b)
+  (k W j i f)
+  (l W h g c))
+
+(print-labelings (diagram 'poiuyt))
+
+(defdiagram tower
+  (a Y b c d)    (n L q o) 
+  (b W g e a)    (o W y j n)
+  (c W e f a)    (p L r i)
+  (d W f g a)    (q W n s w)
+  (e L c b)      (r W s p x)
+  (f Y d c i)    (s L r q)
+  (g Y b d h)    (t W w x z)
+  (h W l g j)    (u W x y z)
+  (i W f m p)    (v W y w z)
+  (j Y h o k)    (w Y t v q)
+  (k W m l j)    (x Y r u t)
+  (l L h k)      (y Y v u o)
+  (m L k i)      (z Y t u v))
+
+(print-labelings (ground (diagram 'tower) 'l 'k))
+
+(defdiagram arch
+  (a W e b c)  (p L o q)
+  (b L d a)    (q T p i r)
+  (c Y a d g)  (r T j s q)
+  (d Y c b m)  (s L r t)
+  (e L a f)    (t W v s k)
+  (f T e g n)  (u L t l)
+  (g W h f c)  (v L 2 4)
+  (h T g i o)  (w W x 1 y)
+  (i T h j q)  (x L w z)
+  (j T i k r)  (y Y w 2 z)
+  (k T j l t)  (z W 3 x y)
+  (l T k m v)  (1 T n o w)
+  (m L l d)    (2 W v 3 y)
+  (n L f 1)    (3 L z 2)
+  (o W p 1 h)  (4 T u l v))
+
+(defdiagram arch
+  (a W e b c)  (p L o q)
+  (b L d a)    (q T p i r)
+  (c Y a d g)  (r T j s q)
+  (d Y c b m)  (s L r t)
+  (e L a f)    (t W u s k)    ; t-u not t-v
+  (f T e g n)  (u L t 4)      ; u-4 not u-l
+  (g W h f c)  (v L 2 4)
+  (h T g i o)  (w W x 1 y)
+  (i T h j q)  (x L w z)
+  (j T i k r)  (y Y w 2 z)
+  (k T j l t)  (z W 3 x y)
+  (l T k m 4)  (1 T n o w)    ; l-4 not l-v
+  (m L l d)    (2 W v 3 y)
+  (n L f 1)    (3 L z 2)
+  (o W p 1 h)  (4 T u l v))
+
+(print-labelings (ground (diagram 'arch) 'x 'z))
+
+(defdiagram arch
+  (a W e b c)  (p L o q)
+  (b L d a)    (q T p i r)
+  (c Y a d g)  (r T j s q)
+  (d W b m c)  (s L r t)      ; d is a W, not Y
+  (e L a f)    (t W u s k)    
+  (f T e g n)  (u L t 4)      
+  (g W h f c)  (v L 2 4)
+  (h T g i o)  (w W x 1 y)
+  (i T h j q)  (x L w z)
+  (j T i k r)  (y Y w 2 z)
+  (k T j l t)  (z W 3 x y)
+  (l T k m 4)  (1 T n o w)    
+  (m L l d)    (2 W v 3 y)
+  (n L f 1)    (3 L z 2)
+  (o W p 1 h)  (4 T u l v))
+

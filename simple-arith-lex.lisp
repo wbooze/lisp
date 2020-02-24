@@ -1,3 +1,6 @@
+(asdf:load-system :graylex)
+(asdf:load-system :yacc)
+
 (defpackage :simple-arith-parsing-test
   (:use :cl :graylex :yacc))
 
@@ -5,7 +8,7 @@
 
 (defun arith-lexer (stream)
   (make-instance
-   'lexer-input-stream
+   'graylex::lexer-input-stream
    :stream stream
    :rules '(("\\+" . +)
             ("\\*" . *)
@@ -42,13 +45,14 @@
   (term var int (- term) (|(| expression |)| #'k-2-3)))
 
 
-;; TEST                                                                                             
-(with-input-from-string (s " x* (-  2)+3*y")
-  (let ((lex (arith-lexer s)))
-    (print (parse-with-lexer #'(lambda ()
-                                 (multiple-value-bind (a b) (stream-read-token lex)
-                                   (if (eql a 'space)
-                                       ;; ignore spaces and just read more.                         
-                                       (stream-read-token lex)
-                                       (values a b))))
-                             *expression-parser*))))
+;; TEST    
+
+(with-input-from-string (s " x*(-2)+3*y")
+ (let ((lex (arith-lexer s)))
+   (print (parse-with-lexer #'(lambda ()
+			 (multiple-value-bind (a b) (graylex:stream-read-token lex)
+					      (if (eql a 'space)
+						  ;; ignore spaces and just read more.                         
+						  (graylex:stream-read-token lex)
+						(values a b))))
+			  *expression-parser*))))

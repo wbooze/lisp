@@ -1,0 +1,82 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+> (mycin)
+------ PATIENT-1 ------
+Patient's name: Sylvia Fischer
+Sex: female
+Age: 27
+------ CULTURE-1 ------
+From what site was the specimen for CULTURE-1 taken? blood
+How many days ago was this culture (CULTURE-1) obtained? 3
+------ ORGANISM-1 ------
+Enter the identity (genus) of ORGANISM-1: unknown
+The gram stain of ORGANISM-1: ?
+A GRAM must be of type (MEMBER ACID-FAST POS NEG)
+The gram stain of ORGANISM-1: neg
+
+Is ORGANISM-1 a rod or coccus (etc.): rod
+What is the AEROBICITY of ORGANISM-1? why
+[Why is the value of AEROBICITY being asked for?]
+It is known that:
+    1) THE GRAM OF THE ORGANISM IS NEG
+    2) THE MORPHOLOGY OF THE ORGANISM IS ROD
+Therefore,
+Rule 107:
+  If
+    1) THE AEROBICITY OF THE ORGANISM IS AEROBIC
+  Then there is suggestive evidence (0.8) that
+    1) THE IDENTITY OF THE ORGANISM IS ENTEROBACTERIACEAE 
+
+What is the AEROBICITY of ORGANISM-1? aerobic
+Is Sylvia Fischer a compromised host? yes
+Is Sylvia Fischer a burn patient?  If so, mild or serious? why
+[Why is the value of BURN being asked for?]
+It is known that:
+    1) THE SITE OF THE CULTURE IS BLOOD
+    2) THE GRAM OF THE ORGANISM IS NEG
+    3) THE MORPHOLOGY OF THE ORGANISM IS ROD
+Therefore,
+Rule 52:
+  If
+    1) THE BURN OF THE PATIENT IS SERIOUS
+  Then there is weakly suggestive evidence (0.4) that
+    1) THE IDENTITY OF THE ORGANISM IS PSEUDOMONAS 
+Is Sylvia Fischer a burn patient?  If so, mild or serious? serious
+Findings for ORGANISM-1:
+ IDENTITY: ENTEROBACTERIACEAE (0.800)   PSEUDOMONAS (0.760)  
+
+Is there another ORGANISM? (Y or N) Y
+------ ORGANISM-2 ------
+Enter the identity (genus) of ORGANISM-2: unknown
+The gram stain of ORGANISM-2: (neg .8 pos .2)
+Is ORGANISM-2 a rod or coccus (etc.): rod
+What is the AEROBICITY of ORGANISM-2?  anaerobic
+
+Findings for ORGANISM-2:
+ IDENTITY: BACTEROIDES (0.720)   PSEUDOMONAS (0.646)  
+
+Is there another ORGANISM? (Y or N) N
+Is there another CULTURE? (Y or N) N
+Is there another PATIENT? (Y or N) N
+
+;;;; If you add the following rules, then rerun the last case above,
+;;;; MYCIN will do backward chaining.  See section 16.8.
+
+(defparm wbc patient number
+  "What is ~a's white blood cell count?")
+
+(defrule 1
+  if (immunosuppressed patient is yes)
+  then 1.0 (compromised-host patient is yes))
+
+(defrule 2
+  if (leukopenia patient is yes)
+  then 1.0 (immunosuppressed patient is yes))
+
+(defrule 3
+  if (wbc patient < 2.5)
+  then .9 (leukopenia patient is yes))
+
+

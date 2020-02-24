@@ -1,0 +1,53 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+(<- (likes Robin cats))
+(<- (likes Sandy ?x) (likes ?x cats))
+(<- (likes Kim ?x) (likes ?x Lee) (likes ?x Kim))
+
+(prolog-compile 'likes)
+;;;; (DEFUN LIKES/2 (?ARG1 ?ARG2 CONT)
+;;;;  (LET ((OLD-TRAIL (FILL-POINTER *TRAIL*)))
+;;;;    (IF (UNIFY! ?ARG1 'ROBIN)
+;;;;        (IF (UNIFY! ?ARG2 'CATS)
+;;;;            (FUNCALL CONT)))
+;;;;    (UNDO-BINDINGS! OLD-TRAIL)
+;;;;    (IF (UNIFY! ?ARG1 'SANDY)
+;;;;        (LIKES/2 ?ARG2 'CATS CONT))
+;;;;    (UNDO-BINDINGS! OLD-TRAIL)
+;;;;    (IF (UNIFY! ?ARG1 'KIM)
+;;;;        (LIKES/2 ?ARG2 'LEE (LAMBDA ()
+;;;;                              (LIKES/2 ?ARG2 'KIM CONT))))))
+
+(<- (member ?item (?item . ?rest)))
+(<- (member ?item (?x . ?rest)) (member ?item ?rest))
+
+(prolog-compile 'member)
+;;;; (DEFUN MEMBER/2 (?ARG1 ?ARG2 CONT)
+;;;;  (LET ((OLD-TRAIL (FILL-POINTER *TRAIL*)))
+;;;;    (IF (UNIFY! ?ARG2 (CONS ?ARG1 (?)))
+;;;;        (FUNCALL CONT))
+;;;;    (UNDO-BINDINGS! OLD-TRAIL)
+;;;;    (LET ((?REST (?)))
+;;;;      (IF (UNIFY! ?ARG2 (CONS (?) ?REST))
+;;;;          (MEMBER/2 ?ARG1 ?REST CONT)))))
+
+(<- (test-cut) (p a) (p b) ! (p c) (p d))
+(<- (test-cut) (p e))
+
+(<- (p ?x) (write (?x 1)))
+(<- (p ?x) (write (?x 2)))
+
+(?- (test-cut))
+;;;; (A 1)(B 1)(C 1)(D 1)
+;;;; Yes;
+;;;; (D 2)
+;;;; Yes;
+;;;; (C 2)(D 1)
+;;;; Yes;
+;;;; (D 2)
+;;;; Yes;
+;;;; No.
+
+

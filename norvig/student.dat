@@ -1,0 +1,153 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+(translate-to-expression '(if z is 3 |,| what is twice z))
+; Input: (If z is 3, what is twice z)
+; Rule: ((if ?x |,| ?y)       (?x ?y))
+; Binding: ((?x . (z is 3))  (?y . (what is twice z)))
+;  Input: (z is 3)
+;  Rule: ((?x is ?y)          (= ?x ?y))
+;  Result: (= z 3)
+;  Input: (what is twice z ?)
+;  Rule: ((?x is ?y)          (= ?x ?y))
+;  Binding: ((?x . what) (?y . (twice z)))
+;    Input: (twice z)
+;    Rule: ((twice ?x)         (* 2 ?x))
+;    Result: (* 2 z)
+;  Result: (= what (* 2 z))
+; Result: ((= z 3) (= what (* 2 z)))
+
+(solve-equations (translate-to-expression '(if z is 3 |,| what is twice z)))
+
+(trace isolate solve)
+;;;; -> (isolate solve)
+
+(solve-equations '((= (+ 3 4) (* (- 5 (+ 2 x)) 7))
+                   (= (+ (* 3 x) y) 12)))
+
+(solve-equations '( (= 0 (+ (* 2 x x) (8 x) 1))))
+
+
+; The equations to be solved are:
+;   (3 + 4) = ((5 - (2 + X)) * 7)
+;   ((3 * X) + Y) = 12
+; (1 ENTER SOLVE: ((= (+ 3 4) (* (- 5 (+ 2 X)) 7))
+;                 (= (+ (* 3 X) Y) 12)) NIL)
+;  (1 ENTER ISOLATE: (= (+ 3 4) (* (- 5 (+ 2 X)) 7)) X)
+;    (2 ENTER ISOLATE: (= (* (- 5 (+ 2 X)) 7) (+ 3 4)) X)
+;      (3 ENTER ISOLATE: (= (- 5 (+ 2 X)) (/ (+ 3 4) 7)) X)
+;        (4 ENTER ISOLATE: (= (+ 2 X) (- 5 (/ (+ 3 4) 7))) X)
+;          (5 ENTER ISOLATE: (= X (- (- 5 (/ (+ 3 4) 7)) 2)) X)
+;          (5 EXIT ISOLATE: (= X (- (- 5 (/ (+ 3 4) 7)) 2)))
+;        (4 EXIT ISOLATE: (= X (- (- 5 (/ (+ 3 4) 7)) 2)))
+;      (3 EXIT ISOLATE: (= X (- (- 5 (/ (+ 3 4) 7)) 2)))
+;    (2 EXIT ISOLATE: (= X (- (- 5 (/ (+ 3 4) 7)) 2)))
+;  (1 EXIT ISOLATE: (= X (- (- 5 (/ (+ 3 4) 7)) 2)))
+;  (2 ENTER SOLVE: ((= (+ (* 3 2) Y) 12)) ((= X 2)))
+;    (1 ENTER ISOLATE: (= (+ (* 3 2) Y) 12) Y)
+;      (2 ENTER ISOLATE: (= Y (- 12 (* 3 2))) Y)
+;      (2 EXIT ISOLATE: (= Y (- 12 (* 3 2))))
+;    (1 EXIT ISOLATE: (= Y (- 12 (* 3 2))))
+;    (3 ENTER SOLVE: NIL ((= Y 6) (= X 2)))
+;    (3 EXIT SOLVE: ((= Y 6) (= X 2)))
+;  (2 EXIT SOLVE: ((= Y 6) (= X 2)))
+; (1 EXIT SOLVE: ((= Y 6) (= X 2)))
+; The solution is:
+;   Y = 6
+;   X = 2
+; -> NIL
+
+(student '(If the number of customers Tom gets is twice the square of
+           20 % of the number of advertisements he runs |,| 
+           and the number of advertisements is 45 |,|
+           then what is the number of customers Tom gets ?))
+; The equations to be solved are:
+;   CUSTOMERS = (2 * (((20 / 100) * ADVERTISEMENTS) * 
+;                     ((20 / 100) * ADVERTISEMENTS)))
+;   ADVERTISEMENTS = 45
+;   WHAT = CUSTOMERS
+; 
+; The solution is:
+;   WHAT = 162
+;   CUSTOMERS = 162
+;   ADVERTISEMENTS = 45
+; -> NIL
+(with-input-from-string
+ (input
+  "The daily cost of living for a group is the overhead cost plus 
+   the running cost for each person times the number of people in 
+   the group.  This cost for one group equals $100,
+   and the number of people in the group is 40.
+   If the overhead cost is 10 times the running cost,
+   find the overhead and running cost for each person.")
+ (loop for word = (read input nil :eof nil)
+       until (eq word :eof)
+       collect word into text
+       finally return text))
+
+
+(student '(The capitain |'| s age is half the capitain |'| s height measured in centimeters. The capitain |'| s height is twice his height when he was twice younger. What |'| s the capitain |'| s age ?))
+
+(student '(The daily cost of living for a group is the overhead cost plus 
+           the running cost for each person times the number of people in 
+           the group |.|  This cost for one group equals $ 100 |,|
+           and the number of people in the group is 40 |.|
+           If the overhead cost is 10 times the running cost |,|
+           find the overhead and running cost for each person |.|))
+; The equations to be solved are:
+;   DAILY = (OVERHEAD + (RUNNING * PEOPLE))
+;   COST = 100
+;   PEOPLE = 40
+;   OVERHEAD = (10 * RUNNING)
+;   TO-FIND-1 = OVERHEAD
+;   TO-FIND-2 = RUNNING
+; 
+; The solution is:
+;   PEOPLE = 40
+;   COST = 100
+; -> NIL
+
+(student '(Fran's age divided by Robin's height is one half Kelly's IQ |.|
+           Kelly's IQ minus 80 is Robin's height |.|
+           If Robin is 4 feet tall |,| how old is Fran ?))
+; The equations to be solved are:
+;   (FRAN / ROBIN) = (KELLY / 2)
+;   (KELLY - 80) = ROBIN
+;   ROBIN = 4
+;   HOW = FRAN
+; 
+; The solution is:
+;   HOW = 168
+;   FRAN = 168
+;   KELLY = 84
+;   ROBIN = 4
+; -> NIL
+
+(student '(Fran's age divided by Robin's height is one half Kelly's IQ |.|
+           Kelly's IQ minus 80 is Robin's height |.|
+           If Robin is 0 feet tall |,| how old is Fran ?))
+; The equations to be solved are:
+;   (FRAN / ROBIN) = (KELLY / 2)
+;   (KELLY - 80) = ROBIN
+;   ROBIN = 0
+;   HOW = FRAN
+; 
+; The solution is:
+;   HOW = 0
+;   FRAN = 0
+;   KELLY = 80
+;   ROBIN = 0
+; -> NIL
+
+(student '(Fran's age times Robin's height is one half Kelly's IQ |.|
+	   Kelly's IQ minus 80 is Robin's height |.|
+	   If Robin is 0 feet tall |,| how old is Fran ?))
+; The equations to be solved are:
+;   (FRAN * ROBIN) = (KELLY / 2)
+;   (KELLY - 80) = ROBIN
+;   ROBIN = 0
+;   HOW = FRAN
+; 
+; >>Error: There was an attempt to divide a number by zero
+

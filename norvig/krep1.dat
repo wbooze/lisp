@@ -1,0 +1,43 @@
+;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;; Code from Paradigms of Artificial Intelligence Programming
+;;; Copyright (c) 1991 Peter Norvig
+
+> (test-index)
+((#1=(P A B)
+  #2=(P A C)
+  #3=(P A ?X)
+  #4=(P B C)
+  #5=(P B (F C))
+  #6=(P A (F . ?X)))
+ #(#(NIL NIL (P (6 #6# #5# #4# #3# #2# #1#)) (0))
+   #(#(NIL NIL (B (2 #5# #4#) A (4 #6# #3# #2# #1#)) (0))
+     #(#(#(NIL NIL (F (2 #6# #5#)) (0))
+         #(#(NIL NIL (C (1 #5#)) (0))
+           #(NIL NIL NIL (0)) NIL (1 #6#))
+         (C (2 #4# #2#) B (1 #1#))
+         (1 #3#))
+       #(NIL NIL NIL (0))
+       NIL (0))
+     NIL (0))
+   NIL (0)))
+
+> (fetch '(p ? c))
+(((P B C) (P A C))
+ ((P A ?X)))
+3
+
+> (fetch '(p ?x c))
+(((P B C) (P A C))
+ ((P A ?X3408)))
+3
+
+> (retrieve '(p ?x c))
+(((?X3408 . C) (?X . A))
+ ((?X . A))
+ ((?X . B)))
+
+> (retrieve-matches '(p ?v c))
+((P A C) (P A C) (P B C))
+
+> (retrieve-matches '(p ?w (?fn c)))
+((P A (?FN C)) (P A (F C)) (P B (F C)))

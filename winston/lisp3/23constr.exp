@@ -1,0 +1,93 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD MICRO-CLOS SYSTEM (remove if your Lisp contains CLOS)
+#-:clos
+(load "clos.lisp")
+
+;;;; LOAD CONSTRAINT PROCEDURES
+(load "23constr.lisp")
+
+;;;; TEST CONSTRAINT PROCEDURES
+
+(let ((assertions
+        (list (make-instance 'assertion :name 'broker1)
+              (make-instance 'assertion :name 'broker2)
+              (make-instance 'assertion :name 'broker-opinion)
+              (make-instance 'assertion :name 'mystic1)
+              (make-instance 'assertion :name 'mystic2)
+              (make-instance 'assertion :name 'mystic-opinion)
+              (make-instance 'assertion :name 'your-opinion)))        
+      (constraints
+        (list (make-instance 'or-box :name 'broker-constraint)
+              (make-instance 'or-box :name 'mystic-constraint)
+              (make-instance 'and-box :name 'your-constraint))))
+  (dolist (l constraints) (set (constraint-name l) l))
+  (dolist (l assertions) (set (assertion-name l) l))
+  (connect3 broker-constraint broker1 broker2 broker-opinion)
+  (connect3 mystic-constraint mystic1 mystic2 mystic-opinion)
+  (connect3 your-constraint 
+            broker-opinion
+            mystic-opinion
+            your-opinion)
+  (values))
+
+(initiate-propagation broker1 .25 .75)
+(initiate-propagation broker2 .33 .66)
+(initiate-propagation mystic1 .15 .15)
+(initiate-propagation mystic2 .85 .85)
+
+(let ((assertions
+        (list (make-instance 'assertion :name 'broker1)
+              (make-instance 'assertion :name 'broker2)
+              (make-instance 'assertion :name 'broker-opinion)
+              (make-instance 'assertion :name 'mystic1)
+              (make-instance 'assertion :name 'mystic2)
+              (make-instance 'assertion :name 'mystic-opinion)
+              (make-instance 'assertion :name 'your-opinion)))        
+      (constraints
+        (list (make-instance 'or-box :name 'broker-constraint)
+              (make-instance 'or-box :name 'mystic-constraint)
+              (make-instance 'or-box :name 'your-constraint))))
+  (dolist (l constraints) (set (constraint-name l) l))
+  (dolist (l assertions) (set (assertion-name l) l))
+  (connect3 broker-constraint broker1 broker2 broker-opinion)
+  (connect3 mystic-constraint mystic1 mystic2 mystic-opinion)
+  (connect3 your-constraint 
+            broker-opinion
+            mystic-opinion
+            your-opinion)
+  (values))
+
+(initiate-propagation broker1 .25 .75)
+(initiate-propagation broker2 .33 .66)
+(initiate-propagation mystic1 .15 .15)
+(initiate-propagation mystic2 .85 .85)
+
+(let ((assertions
+        (list (make-instance 'assertion :name 'broker1)
+              (make-instance 'assertion :name 'broker2)
+              (make-instance 'assertion :name 'broker-opinion)
+              (make-instance 'assertion :name 'mystic1)
+              (make-instance 'assertion :name 'mystic2)
+              (make-instance 'assertion :name 'mystic-opinion)
+              (make-instance 'assertion :name 'your-opinion)))        
+      (constraints
+        (list (make-instance 'or-box :name 'broker-constraint)
+              (make-instance 'or-box :name 'mystic-constraint)
+              (make-instance 'or-box :name 'your-constraint))))
+  (dolist (l constraints) (set (constraint-name l) l))
+  (dolist (l assertions) (set (assertion-name l) l))
+  (connect3 broker-constraint broker1 broker2 broker-opinion)
+  (connect3 mystic-constraint mystic1 mystic2 mystic-opinion)
+  (connect3 your-constraint 
+            broker-opinion
+            mystic-opinion
+            your-opinion)
+  (values))
+
+(initiate-propagation your-opinion .5 .75)

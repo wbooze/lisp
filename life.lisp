@@ -1,5 +1,3 @@
-
-
 (defvar *alive* 1)
 (defvar *dead* 0)
 

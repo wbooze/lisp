@@ -20,7 +20,7 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (cl-user::ql :rt)
   (cl-user::ql :mcclim)
-  (load "/home/oleo/quicklisp/dists/quicklisp/software/rt-20101006-git/rt-test.lisp"))
+  (load "/home/oleo2/quicklisp/dists/quicklisp/software/rt-20101006-git/rt-test.lisp"))
 
 (cl:defpackage :rt-clim
   (:use :clim :clim-lisp :rt)

@@ -20,10 +20,10 @@
 ;; Maxima needs to be loaded before this file can work!
 (defun load-maxima ()
   (eval-when (:compile-toplevel :load-toplevel :execute)
-    (cl-user::change-directory "/home/oleo/maxima-code/src/")
+    (cl-user::change-directory "/home/oleo2/maxima-code/src/")
     (load "maxima-build.lisp")
     (maxima-load)
-    (cl-user::change-directory "/home/oleo/")))
+    (cl-user::change-directory "/home/oleo2/")))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (if (not (find-package :maxima))
@@ -36,7 +36,7 @@
 
 ;; Replace some of maxima's display routines with own.
 (defparameter writefilep nil)
-(defparameter *maxima-tempdir* "/home/oleo/temp/")
+(defparameter *maxima-tempdir* "/home/oleo2/temp/")
 (defparameter *gnuplot-stream* nil)
 (defparameter *gnuplot_term* '$dumb)
 (defparameter maxima::*maxima-infodir* "/usr/local/share/info/")
@@ -90,7 +90,7 @@
 		 `((mbox simp) (,(car f) ,@(mapcar #'boxify-internal (cdr f))))))))
     (if (listp form)
       `(,(car form) ,@(mapcar #'boxify-internal (cdr form)))
-      ;;(boxify-internal form)
+      (boxify-internal form)
       form)))
 
 (in-package :clim-user)
@@ -300,11 +300,11 @@
       :margin 1200 :text-margin 1200)
     (doc :pointer-documentation :default-view +listener-pointer-documentation-view+ :height 100 :min-height 100)
     (showtime (make-pane 'showtime-pane :incremental-redisplay nil
-		:min-height 2
-		:height 2
+		:min-height 3
+		:height 3
 		:display-function 'display-showtime :display-time :command-loop 
-		:scroll-bars nil
-		:end-of-line-action :wrap)))
+		:scroll-bars :both
+		:end-of-line-action :allow :end-of-page-action :scroll)))
   (:top-level (default-frame-top-level :prompt 'maxima-prompt))
   (:command-table (maxima-repl
 		    :inherit-from (lisp-commands)
@@ -323,7 +323,7 @@
   ((form 'clim:form :prompt "form") &key (batch-or-demo-flag nil))
 
   (let* ((r form)
-	  (input-stream (get-frame-pane *application-frame* 'interactor))
+	 (input-stream (get-frame-pane *application-frame* 'interactor))
 	  (*standard-input* input-stream)
 	  (*standard-output* input-stream)
 	  (*terminal-io* input-stream)
@@ -361,7 +361,7 @@
 	(setq maxima::c-tag (maxima::makelabel maxima::$inchar))
 
 	(let ((maxima::*mread-prompt* (if batch-or-demo-flag nil (maxima::main-prompt)))
-	       (eof-count 0))
+	       (maxima::eof-count 0))
 	  
 	  ;; This is something of a hack. If we are running in a server mode
 	  ;; (which we determine by checking *socket-connection*) and we get
@@ -520,7 +520,7 @@
 		    (height 800)
 		    (margin 1200)
 		    (text-margin 1200)
-		    (process-name "Maxima Listener")
+		    (process-name "Maxima App")
 		    (eval nil))
   (flet ((run ()
            (run-frame-top-level
@@ -573,6 +573,7 @@
 (defun untabify (input)
   (let ((line-posn 0))
     (with-output-to-string (output)
+			   (with-drawing-options (output :ink +white+)
       (dotimes (i (length input))
 	(let ((char (char input i)))
 	  (case char
@@ -586,4 +587,4 @@
 	      (write-char #\Newline output))
 	    (t
 	      (incf line-posn)
-	      (write-char char output))))))))
+	      (write-char char output)))))))))

@@ -1,0 +1,35 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+(canon-simplifier)
+CANON> (3 + x + 4 - x)
+7 
+CANON> (x + y + y + x)
+((2 * X) + (2 * Y)) 
+CANON> (3 * x + 4 * x)
+(7 * X) 
+CANON> (3 * x + y + x + 4 * x)
+((8 * X) + Y) 
+CANON> (3 * x + y + z + x + 4 * x)
+((8 * X) + (Y + Z)) 
+CANON> ((x + 1) ^ 10)
+((X ^ 10) + (10 * (X ^ 9)) + (45 * (X ^ 8)) + (120 * (X ^ 7))
+ + (210 * (X ^ 6)) + (252 * (X ^ 5)) + (210 * (X ^ 4))
+ + (120 * (X ^ 3)) + (45 * (X ^ 2)) + (10 * X) + 1) 
+CANON> ((x + 1) ^ 10 + (x - 1) ^ 10)
+((2 * (X ^ 10)) + (90 * (X ^ 8)) + (420 * (X ^ 6)) 
+ + (420 * (X ^ 4)) + (90 * (X ^ 2)) + 2)
+CANON> ((x + 1) ^ 10 - (x - 1) ^ 10)
+((20 * (X ^ 8)) + (240 * (X ^ 7)) + (504 * (X ^ 5))
+ + (240 * (X ^ 3)) + (20 * X)) 
+CANON> (3 * x ^ 3 + 4 * x * y * (x - 1) + x ^ 2 * (x + y))
+((4 * (X ^ 3)) + ((5 * Y) * (X ^ 2)) + ((-4 * Y) * X)) 
+CANON> (3 * x ^ 3 + 4 * x * w * (x - 1) + x ^ 2 * (x + w))
+((((5 * (X ^ 2)) + (-4 * X)) * W) + (4 * (X ^ 3))) 
+CANON> (d (3 * x ^ 2 + 2 * x + 1) / d x)
+((6 * X) + 2) 
+CANON> (d(z + 3 * x + 3 * z * x ^ 2 + z ^ 2 * x ^ 3) / d z)
+(((2 * Z) * (X ^ 3)) + (3 * (X ^ 2)) + 1) 
+CANON> [Abort]
+

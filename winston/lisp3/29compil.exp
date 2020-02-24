@@ -1,0 +1,34 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD LANGUAGE COMPILER
+
+(load "29compil.lisp")
+
+;;;; LOAD TEST GRAMMAR
+
+(load "29compil.dta")
+
+;;;; LOAD RELATIONAL DATABASE PROCEDURES
+
+(load "30databa.lisp")
+
+;;;; LOAD RELATIONAL DATABASE DATA
+
+(load "30databa.dta")
+
+;;;; TEST LANGUAGE COMPILER
+
+;; > Count the long screwdrivers.
+(interface '(Count the long screwdrivers))
+;; > Show me the length of the blue screwdriver.
+(interface '(Show me the size of the blue screwdriver))
+;; > Print the size and weight of the red screwdrivers.
+(interface '(Print the size and weight of the red screwdrivers))
+;; > Describe the red screwdrivers.
+(interface '(describe the red screwdrivers))
+

@@ -1,0 +1,36 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+(use *grammar5*)
+;;;; -> 17
+
+(meanings '(1 to 5 without 3))
+;;;; -> ((1 2 4 5))
+
+(meanings '(1 to 4 and 7 to 9))
+;;;; -> ((1 2 3 4 7 8 9))
+
+(meanings '(1 to 6 without 3 and 4))
+;;;; -> ((1 2 4 5 6) (1 2 5 6))
+
+
+(use *grammar6*)
+;;;; -> 18
+
+(meanings '(1 to 6 without 3 and 4))
+;;;; -> ((1 2 5 6))
+
+(meanings '(1 and 3 to 7 and 9 without 5 and 6))
+;;;; -> ((1 3 4 7 9))
+
+(meanings '(1 and 3 to 7 and 9 without 5 and 2))
+;;;; -> ((1 3 4 6 7 9 2))
+
+(meanings '(1 9 8 to 2 0 1))
+;;;; -> ((198 199 200 201))
+
+(meanings '(1 2 3))
+;;;; -> (123 (123))
+
+

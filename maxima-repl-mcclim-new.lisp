@@ -20,10 +20,10 @@
 ;; Maxima needs to be loaded before this file can work!
 (defun load-maxima ()
   (eval-when (:compile-toplevel :load-toplevel :execute)
-    (cl-user::change-directory "/home/oleo/maxima-code/src/")
+    (cl-user::change-directory "/home/oleo2/maxima-code/src/")
     (load "maxima-build.lisp")
     (maxima-load)
-    (cl-user::change-directory "/home/oleo/")))
+    (cl-user::change-directory "/home/oleo2/")))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (if (not (find-package :maxima))
@@ -37,7 +37,7 @@
 
 
 (defparameter writefilep nil)
-(defparameter *maxima-tempdir* "/home/oleo/temp/")
+(defparameter *maxima-tempdir* "/home/oleo2/temp/")
 (defparameter *x-width* 0)
 (defparameter *y-width* 0)
 (defparameter *gnuplot-stream* nil)

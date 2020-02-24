@@ -1,0 +1,263 @@
+;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;; Code from Paradigms of Artificial Intelligence Programming
+;;; Copyright (c) 1991 Peter Norvig
+
+;;; ==============================
+
+(push (make-op :action 'ask-phone-number
+               :preconds '(in-communication-with-shop)
+               :add-list '(know-phone-number))
+      *school-ops*)
+
+> (use *school-ops*) -> 7
+
+> (gps '(son-at-home car-needs-battery have-money have-phone-book)
+       '(son-at-school))
+((START)
+ (EXECUTING LOOK-UP-NUMBER) 
+ (EXECUTING TELEPHONE-SHOP)
+ (EXECUTING TELL-SHOP-PROBLEM)
+ (EXECUTING GIVE-SHOP-MONEY)
+ (EXECUTING SHOP-INSTALLS-BATTERY)
+ (EXECUTING DRIVE-SON-TO-SCHOOL))
+
+> (debug :gps) -> (:GPS)
+
+> (gps '(son-at-home car-needs-battery have-money have-phone-book)
+       '(son-at-school))
+Goal: SON-AT-SCHOOL
+Consider: DRIVE-SON-TO-SCHOOL
+  Goal: SON-AT-HOME
+  Goal: CAR-WORKS
+  Consider: SHOP-INSTALLS-BATTERY
+    Goal: CAR-NEEDS-BATTERY
+    Goal: SHOP-KNOWS-PROBLEM
+    Consider: TELL-SHOP-PROBLEM
+      Goal: IN-COMMUNICATION-WITH-SHOP
+      Consider: TELEPHONE-SHOP
+        Goal: KNOW-PHONE-NUMBER
+        Consider: ASK-PHONE-NUMBER
+          Goal: IN-COMMUNICATION-WITH-SHOP
+        Consider: LOOK-UP-NUMBER
+          Goal: HAVE-PHONE-BOOK
+        Action: LOOK-UP-NUMBER
+      Action: TELEPHONE-SHOP
+    Action: TELL-SHOP-PROBLEM
+    Goal: SHOP-HAS-MONEY
+    Consider: GIVE-SHOP-MONEY
+      Goal: HAVE-MONEY
+    Action: GIVE-SHOP-MONEY
+  Action: SHOP-INSTALLS-BATTERY
+Action: DRIVE-SON-TO-SCHOOL
+((START)
+ (EXECUTING LOOK-UP-NUMBER)
+ (EXECUTING TELEPHONE-SHOP)
+ (EXECUTING TELL-SHOP-PROBLEM)
+ (EXECUTING GIVE-SHOP-MONEY)
+ (EXECUTING SHOP-INSTALLS-BATTERY)
+ (EXECUTING DRIVE-SON-TO-SCHOOL))
+
+> (undebug) -> NIL
+
+> (gps '(son-at-home car-works)
+       '(son-at-school))
+((START)
+ (EXECUTING DRIVE-SON-TO-SCHOOL))
+
+;;; ==============================
+
+> (gps '(son-at-home car-needs-battery have-money have-phone-book)
+       '(have-money son-at-school))
+NIL
+
+> (gps '(son-at-home car-needs-battery have-money have-phone-book)
+       '(son-at-school have-money))
+NIL
+
+> (gps '(son-at-home car-needs-battery have-money)
+       '(son-at-school))
+NIL
+
+;;; ==============================
+
+> (gps '(son-at-home) '(son-at-home)) -> ((START))
+
+;;; ==============================
+
+> (use *banana-ops*) -> 6
+
+> (GPS '(at-door on-floor has-ball hungry chair-at-door)
+       '(not-hungry))
+((START)
+ (EXECUTING PUSH-CHAIR-FROM-DOOR-TO-MIDDLE-ROOM)
+ (EXECUTING CLIMB-ON-CHAIR)
+ (EXECUTING DROP-BALL)
+ (EXECUTING GRASP-BANANAS)
+ (EXECUTING EAT-BANANAS))
+
+;;; ==============================
+
+> (use *maze-ops*) -> 48
+
+> (gps '((at 1)) '((at 25)))
+((START)
+ (EXECUTING (MOVE FROM 1 TO 2))
+ (EXECUTING (MOVE FROM 2 TO 3))
+ (EXECUTING (MOVE FROM 3 TO 4))
+ (EXECUTING (MOVE FROM 4 TO 9))
+ (EXECUTING (MOVE FROM 9 TO 8))
+ (EXECUTING (MOVE FROM 8 TO 7))
+ (EXECUTING (MOVE FROM 7 TO 12))
+ (EXECUTING (MOVE FROM 12 TO 11))
+ (EXECUTING (MOVE FROM 11 TO 16))
+ (EXECUTING (MOVE FROM 16 TO 17))
+ (EXECUTING (MOVE FROM 17 TO 22))
+ (EXECUTING (MOVE FROM 22 TO 23))
+ (EXECUTING (MOVE FROM 23 TO 24))
+ (EXECUTING (MOVE FROM 24 TO 19))
+ (EXECUTING (MOVE FROM 19 TO 20))
+ (EXECUTING (MOVE FROM 20 TO 25))
+ (AT 25))
+
+;;; ==============================
+
+> (use *maze-ops*) -> 48
+
+> (find-path 1 25) -> 
+(1 2 3 4 9 8 7 12 11 16 17 22 23 24 19 20 25)
+
+> (find-path 1 1) -> (1)
+
+> (equal (find-path 1 25) (reverse (find-path 25 1))) -> T
+
+;;; ==============================
+
+> (use (make-block-ops '(a b))) -> 4
+
+> (gps '((a on table) (b on table) (space on a) (space on b)
+         (space on table))
+       '((a on b) (b on table)))
+((START)
+ (EXECUTING (MOVE A FROM TABLE TO B)))
+
+;;; ==============================
+
+> (debug :gps) -> (:GPS)
+
+> (gps '((a on b) (b on table) (space on a) (space on table))
+       '((b on a)))
+Goal: (B ON A)
+Consider: (MOVE B FROM TABLE TO A)
+  Goal: (SPACE ON B)
+  Consider: (MOVE A FROM B TO TABLE)
+    Goal: (SPACE ON A)
+    Goal: (SPACE ON TABLE)
+    Goal: (A ON B)
+  Action: (MOVE A FROM B TO TABLE)
+  Goal: (SPACE ON A)
+  Goal: (B ON TABLE)
+Action: (MOVE B FROM TABLE TO A)
+((START)
+ (EXECUTING (MOVE A FROM B TO TABLE))
+ (EXECUTING (MOVE B FROM TABLE TO A)))
+
+> (undebug) -> NIL
+
+;;; ==============================
+
+> (use (make-block-ops '(a b c))) -> 18
+
+> (gps '((a on b) (b on c) (c on table) (space on a) (space on table))
+       '((b on a) (c on b)))
+((START)
+ (EXECUTING (MOVE A FROM B TO TABLE))
+ (EXECUTING (MOVE B FROM C TO A))
+ (EXECUTING (MOVE C FROM TABLE TO B)))
+
+> (gps '((a on b) (b on c) (c on table) (space on a) (space on table))
+       '((c on b) (b on a)))
+NIL
+
+;;; ==============================
+
+> (gps '((c on a) (a on table) (b on table)
+         (space on c) (space on b) (space on table))
+       '((c on table)))
+((START)
+ (EXECUTING (MOVE C FROM A TO B))
+ (EXECUTING (MOVE C FROM B TO TABLE)))
+
+;;; ==============================
+
+> (gps '((c on a) (a on table) (b on table)
+         (space on c) (space on b) (space on table))
+       '((c on table) (a on b)))
+((START)
+ (EXECUTING (MOVE C FROM A TO B))
+ (EXECUTING (MOVE C FROM B TO TABLE))
+ (EXECUTING (MOVE A FROM TABLE TO C))
+ (EXECUTING (MOVE A FROM C TO B)))
+
+;;; ==============================
+
+> (gps '((c on a) (a on table) (b on table)
+         (space on c) (space on b) (space on table))
+       '((c on table) (a on b)))
+((START)
+ (EXECUTING (MOVE C FROM A TO TABLE))
+ (EXECUTING (MOVE A FROM TABLE TO B)))
+
+;;; ==============================
+
+> (gps '((a on b) (b on c) (c on table) (space on a) (space on table))
+       '((b on a) (c on b)))
+((START)
+ (EXECUTING (MOVE A FROM B TO TABLE))
+ (EXECUTING (MOVE B FROM C TO A))
+ (EXECUTING (MOVE C FROM TABLE TO B)))
+
+> (gps '((a on b) (b on c) (c on table) (space on a) (space on table))
+       '((c on b) (b on a)))
+((START)
+ (EXECUTING (MOVE A FROM B TO TABLE))
+ (EXECUTING (MOVE B FROM C TO A))
+ (EXECUTING (MOVE C FROM TABLE TO B)))
+
+;;; ==============================
+
+> (setf start '((c on a) (a on table) (b on table) (space on c)
+                (space on b) (space on table)))
+((C ON A) (A ON TABLE) (B ON TABLE) (SPACE ON C) 
+ (SPACE ON B) (SPACE ON TABLE))
+
+> (gps start '((a on b) (b on c))) -> NIL
+
+> (gps start '((b on c) (a on b))) -> NIL
+
+;;; ==============================
+
+(use (push (op 'taxi-son-to-school
+               :preconds '(son-at-home have-money)
+               :add-list '(son-at-school)
+               :del-list '(son-at-home have-money))
+           *school-ops*))
+
+(debug :gps)
+
+;;; ==============================
+
+> (gps '(son-at-home have-money car-works)
+       '(son-at-school have-money))
+Goal: SON-AT-SCHOOL
+Consider: TAXI-SON-TO-SCHOOL
+  Goal: SON-AT-HOME
+  Goal: HAVE-MONEY
+Action: TAXI-SON-TO-SCHOOL
+Goal: HAVE-MONEY
+Goal: HAVE-MONEY
+Goal: SON-AT-SCHOOL
+Consider: TAXI-SON-TO-SCHOOL
+  Goal: SON-AT-HOME
+  Goal: HAVE-MONEY
+Action: TAXI-SON-TO-SCHOOL
+NIL

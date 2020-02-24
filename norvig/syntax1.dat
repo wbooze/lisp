@@ -1,0 +1,75 @@
+;;;; -*- Mode: Lisp; Syntax: Common-Lisp -*-
+;;;; Code from Paradigms of AI Programming
+;;;; Copyright (c) 1991 Peter Norvig
+
+;;;; Examples for syntax1.lisp
+
+(use *grammar3*)
+;;;; -> 15
+
+(parser '(the table))
+;;;; -> ((NP (ART THE) (NOUN TABLE)))
+
+(parser '(the ball hit the table))
+;;;; -> ((SENTENCE (NP (ART THE) (NOUN BALL))
+;;;;               (VP (VERB HIT)
+;;;;                   (NP (ART THE) (NOUN TABLE)))))
+
+(parser '(the noun took the verb))
+;;;; -> ((SENTENCE (NP (ART THE) (NOUN NOUN))
+;;;;               (VP (VERB TOOK)
+;;;;                   (NP (ART THE) (NOUN VERB)))))
+
+
+(use *grammar4*)
+;;;; -> 54
+
+(parser '(The man hit the table with the ball))
+;;;; -> ((S (NP (D THE) (N MAN))
+;;;;        (VP (VP (V HIT) (NP (D THE) (N TABLE)))
+;;;;        (PP (P WITH) (NP (D THE) (N BALL)))))
+;;;;     (S (NP (D THE) (N MAN))
+;;;;        (VP (V HIT)
+;;;;            (NP (NP (D THE) (N TABLE))
+;;;;                (PP (P WITH) (NP (D THE) (N BALL)))))))
+
+(parser '(the orange saw))
+;;;; -> ((S (NP (D THE) (N ORANGE)) (VP (V SAW)))
+;;;;     (NP (D THE) (A+ (A ORANGE)) (N SAW)))
+
+(setf s '(THE PERSPICUOUS BIG GREEN BALL BY A BLUE WOMAN WITH A BIG MAN 
+          HIT A TABLE BY THE SAW BY THE GREEN ORANGE))
+
+(time (length (parser s)))
+;;;; Evaluation of (LENGTH (PARSER S 'S)) took .13 Seconds of elapsed time.
+;;;; -> 10
+
+(parser '(John liked Mary))
+;;;; -> ((S (NP (NAME JOHN))
+;;;;        (VP (V LIKED) (NP (NAME MARY)))))
+
+(parser '(Dana liked Dale))
+;;;; -> ((S (NP (NAME DANA))
+;;;;        (VP (V LIKED) (NP (NAME DALE)))))
+
+(parser '(the rab zaggled the woogly quax))
+;;;; -> ((S (NP (D THE) (N RAB))
+;;;;        (VP (V ZAGGLED) (NP (D THE) (A+ (A WOOGLY)) (N QUAX)))))
+
+(parser '(the slithy toves gymbled))
+;;;; -> ((S (NP (D THE) (N SLITHY)) (VP (V TOVES) (NP (NAME GYMBLED))))
+;;;;     (S (NP (D THE) (A+ (A SLITHY)) (N TOVES)) (VP (V GYMBLED)))
+;;;;     (NP (D THE) (A+ (A SLITHY) (A+ (A TOVES))) (N GYMBLED)))
+
+(parser '(the slithy toves gymbled on the wabe))
+;;;; -> ((S (NP (D THE) (N SLITHY))
+;;;;        (VP (VP (V TOVES) (NP (NAME GYMBLED)))
+;;;;              (PP (P ON) (NP (D THE) (N WABE)))))
+;;;;     (S (NP (D THE) (N SLITHY))
+;;;;        (VP (V TOVES) (NP (NP (NAME GYMBLED))
+;;;;                          (PP (P ON) (NP (D THE) (N WABE))))))
+;;;;     (S (NP (D THE) (A+ (A SLITHY)) (N TOVES))
+;;;;        (VP (VP (V GYMBLED)) (PP (P ON) (NP (D THE) (N WABE)))))
+;;;;     (NP (NP (D THE) (A+ (A SLITHY) (A+ (A TOVES))) (N GYMBLED))
+;;;;         (PP (P ON) (NP (D THE) (N WABE)))))
+

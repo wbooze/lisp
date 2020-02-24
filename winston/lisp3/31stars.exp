@@ -1,0 +1,32 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; This file references other files containing copyrighted software.
+;;;; Any restrictions on the use of such software are described in the
+;;;; files containing that software.  This file may be freely copied as
+;;;; long as this notice is kept intact.
+
+;;;; LOAD STARS PROCEDURES
+
+(load "31stars.lisp")
+
+;;;; TEST STARS PROCEDURES
+
+(print-find-match
+    (list (make-star :name "alpha" :x 0.0 :y 1.0 :magnitude 0.0)
+          (make-star :name "beta" :x 0.0 :y 0.0 :magnitude 0.5)
+          (make-star :name "gamma" :x 1.5 :y 1.0 :magnitude 1.0))
+    (list (make-spot :number 1 :u 0.03 :v 1.50 :brightness 0.7)
+          (make-spot :number 2 :u 1.00 :v 1.52 :brightness 0.2)
+          (make-spot :number 3 :u 0.51 :v 0.02 :brightness 1.9)
+          (make-spot :number 4 :u 1.00 :v 0.01 :brightness 1.3)))
+
+(print-find-match
+    (list (make-star :name "alpha" :x 0.0 :y 1.0 :magnitude 0.0)
+          (make-star :name "beta" :x 0.0 :y 0.0 :magnitude 0.5)
+          (make-star :name "gamma" :x 1.5 :y 1.0 :magnitude 1.0)
+          (make-star :name "delta" :x 1.0 :y 0.5 :magnitude 1.5))
+    (list (make-spot :number 1 :u 0.03 :v 1.50 :brightness 0.7)
+          (make-spot :number 2 :u 1.00 :v 1.52 :brightness 0.2)
+          (make-spot :number 3 :u 0.51 :v 0.02 :brightness 1.9)
+          (make-spot :number 4 :u 1.00 :v 0.01 :brightness 1.3)))
+

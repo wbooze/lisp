@@ -1,0 +1,31 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+(setf *assertions* 'empty-stream)
+(remember-assertion '(robbie has dark spots))
+(remember-assertion '(robbie has tawny color))
+(remember-assertion '(robbie eats meat))
+(remember-assertion '(robbie has hair))
+(remember-assertion '(suzie has feathers))
+(remember-assertion '(suzie flies well))
+
+(setf *rules* 'empty-stream)
+(remember-rule '(identify1
+                  ((? animal) has hair)
+                  ((? animal) is a mammal)))
+(remember-rule '(identify3
+                  ((? animal) has feathers)
+                  ((? animal) is a bird)))
+(remember-rule '(identify5 
+                  ((? animal) eats meat)
+                  ((? animal) is a carnivore)))
+(remember-rule '(identify9
+                  ((? animal) is a mammal)
+                  ((? animal) is a carnivore)
+                  ((? animal) has tawny color)
+                  ((? animal) has dark spots)
+                  ((? animal) is a cheetah)))
+(remember-rule '(identify15
+                  ((? animal) is a bird)
+                  ((? animal) flies well)
+                  ((? animal) is a albatross)))
+

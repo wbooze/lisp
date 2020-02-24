@@ -1,0 +1,16 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+3
+| SIZE |
+| ---- |
+| LONG |
+| SIZE  | WEIGHT |
+| ----- | ------ |
+| LONG  | HEAVY  |
+| SHORT | LIGHT  |
+| CLASS       | COLOR | SIZE  | WEIGHT | PEG   |
+| ----------- | ----- | ----- | ------ | ----- |
+| SCREWDRIVER | RED   | LONG  | HEAVY  | (6 2) |
+| SCREWDRIVER | RED   | SHORT | LIGHT  | (7 2) |

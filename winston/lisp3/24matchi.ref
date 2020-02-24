@@ -1,0 +1,20 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+((X APPLE)) 
+((Y RED)) 
+((Y RED) (X APPLE)) 
+NIL 
+NIL 
+NIL 
+FAIL 
+FAIL 
+((H BLOND) (P PATRICK)) 
+((Y RED) (X APPLE)) 
+((M RED) (L APPLE)) 
+((Y (? M)) (X (? L))) 
+((Y (? Y)) (X (? X))) 
+((X (PATRICK IS-A PERSON))) 
+((X (PATRICK IS-A (? Y)))) 
+FAIL 

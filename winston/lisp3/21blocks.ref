@@ -1,0 +1,47 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+Move hand to pick up B4 at location (9.0 2).
+Grasp B4.
+Removing support relations between B4 and TABLE.
+Move B4 to top of B1 at location (0 2).
+Adding support relations between B4 and B1.
+Ungrasp B4.
+Move hand to pick up W7 at location (17.0 2).
+Grasp W7.
+Removing support relations between W7 and TABLE.
+Move W7 to top of B2 at location (2 2).
+Adding support relations between W7 and B2.
+Ungrasp W7.
+Move hand to pick up W7 at location (3.0 4).
+Grasp W7.
+Removing support relations between W7 and B2.
+Move W7 to top of TABLE at location (8 0).
+Adding support relations between W7 and TABLE.
+Ungrasp W7.
+Move hand to pick up B4 at location (1.0 4).
+Grasp B4.
+Removing support relations between B4 and B1.
+Move B4 to top of TABLE at location (16 0).
+Adding support relations between B4 and TABLE.
+Ungrasp B4.
+Move hand to pick up B1 at location (1.0 2).
+Grasp B1.
+Removing support relations between B1 and TABLE.
+Move B1 to top of B2 at location (2 2).
+Adding support relations between B1 and B2.
+Ungrasp B1.
+Move hand to pick up B2 at location (3.0 2).
+Grasp B2.
+Removing support relations between B2 and TABLE.
+Move B2 to top of W7 at location (16 2).
+Move B2 to top of TABLE at location (2 0).
+Adding support relations between B2 and TABLE.
+Ungrasp B2.
+Move hand to pick up B1 at location (1.0 2).
+Grasp B1.
+Removing support relations between B1 and TABLE.
+Move B1 to top of B2 at location (2 2).
+Adding support relations between B1 and B2.
+Ungrasp B1.

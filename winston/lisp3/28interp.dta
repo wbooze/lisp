@@ -1,0 +1,81 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+(define-tree interface
+  (brnchs
+    (count > objects if-end-rtn
+       (db-call `(db-count ,objects)))
+    (how many > objects are there if-end-rtn
+       (db-call `(db-count ,objects)))
+    (> enumerate > objects if-end-rtn
+       (db-call `(db-show ,objects)))
+    (> present the > attributes of > objects if-end-rtn
+       (db-call
+         `(db-show
+            (db-project ,objects over ,@attributes))))))
+
+
+(define-tree attributes
+  (brnchs (> attribute > attributes rtn (cons attribute
+                                              attributes))
+          (and > attribute          rtn (list attribute))
+          (> attribute              rtn (list attribute))))
+(define-tree attribute
+  (brnchs (class        rtn 'class)
+          (color        rtn 'color)
+          (size         rtn 'size)
+          (weight       rtn 'weight)
+          (position     rtn 'peg)
+          (location     rtn 'peg)))
+
+
+(define-tree attribute-values
+  (brnchs (> attribute-value > attribute-values
+             rtn (append attribute-value attribute-values))
+          (and > attribute-value rtn attribute-value)
+          (> attribute-value rtn attribute-value)))
+(define-tree attribute-value
+  (brnchs (large        rtn '(size eql large))
+          (medium       rtn '(size eql medium))
+          (small        rtn '(size eql small))
+          (long         rtn '(size eql long))
+          (short        rtn '(size eql short))
+          (black        rtn '(color eql black))
+          (blue         rtn '(color eql blue))
+          (red          rtn '(color eql red))
+          (yellow       rtn '(color eql yellow))
+          (gray         rtn '(color eql gray))
+          (heavy        rtn '(weight eql heavy))
+          (light        rtn '(weight eql light))))
+
+
+(define-tree objects
+  (brnchs (> determiner > objects rtn objects)
+          (> attribute-values > object
+             rtn `(db-select ,object with ,@attribute-values))
+          (> object rtn object)))
+(define-tree determiner
+  (brnchs (a) (the)))
+(define-tree object
+  (brnchs (saw          rtn 'saws)
+          (saws         rtn 'saws)
+          (hammer       rtn 'hammers)
+          (hammers      rtn 'hammers)
+          (wrench       rtn 'wrenches)
+          (wrenches     rtn 'wrenches)
+          (screwdriver  rtn 'screwdrivers)
+          (screwdrivers rtn 'screwdrivers)))
+
+
+(define-tree enumerate
+  (brnchs (identify)
+          (describe)))
+(define-tree present
+  (brnchs (show me)
+          (what is)
+          (what are)
+          (give)
+          (display)
+          (print)
+          (present)))
+(define-tree object1 (> objects rtn objects))
+(define-tree object2 (> objects rtn objects))

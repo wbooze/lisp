@@ -1,0 +1,48 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+Move hand to pick up B4 at location (9.0 2).
+Grasp B4.
+Removing support relations between B4 and TABLE.
+Move B4 to top of B1 at location (0 2).
+Adding support relations between B4 and B1.
+Ungrasp B4.
+Move hand to pick up W7 at location (17.0 2).
+Grasp W7.
+Removing support relations between W7 and TABLE.
+Move W7 to top of B2 at location (2 2).
+Adding support relations between W7 and B2.
+Ungrasp W7.
+Move hand to pick up W7 at location (3.0 4).
+Grasp W7.
+Removing support relations between W7 and B2.
+Move W7 to top of TABLE at location (8 0).
+Adding support relations between W7 and TABLE.
+Ungrasp W7.
+Move hand to pick up B4 at location (1.0 4).
+Grasp B4.
+Removing support relations between B4 and B1.
+Move B4 to top of TABLE at location (16 0).
+Adding support relations between B4 and TABLE.
+Ungrasp B4.
+Move hand to pick up B1 at location (1.0 2).
+Grasp B1.
+Removing support relations between B1 and TABLE.
+Move B1 to top of B2 at location (2 2).
+Adding support relations between B1 and B2.
+Ungrasp B1.
+TOP-OF-TREE
+  (PUT-ON B1 B2)
+    (MAKE-SPACE B1 B2)
+      (GET-RID-OF W7)
+        (PUT-ON W7 TABLE)
+          (MOVE W7 TABLE)
+    (CLEAR-TOP B1)
+      (GET-RID-OF B4)
+        (PUT-ON B4 TABLE)
+          (MOVE B4 TABLE)
+    (MOVE B1 B2)
+I did (GET-RID-OF W7) because I wanted to (MAKE-SPACE B1 B2).
+I did (MAKE-SPACE B1 B2) because I wanted to (PUT-ON B1 B2).
+I did (PUT-ON B1 B2) because you told me to.

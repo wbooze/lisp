@@ -1,0 +1,11 @@
+;;;; -*- mode:Lisp; package:user -*- ;;;;
+;;;; Created: 10 December 1992
+;;;; Purpose: Test Reference File
+
+Rule IDENTIFY1 indicates (ROBBIE IS A MAMMAL).
+Rule IDENTIFY3 indicates (SUZIE IS A BIRD).
+Rule IDENTIFY5 indicates (ROBBIE IS A CARNIVORE).
+Rule IDENTIFY9 indicates (ROBBIE IS A CHEETAH).
+Rule IDENTIFY15 indicates (SUZIE IS A ALBATROSS).
+I am trying the rules again.
+Nothing new noted.
